@@ -6,10 +6,22 @@ const bcrypt = require("bcryptjs");
 router.post("/Register", async (req, res, next) => {
   try {
     // parameters exists
+    let username = req.body.username;
+    let firstname = req.body.firstname;
+    let lastname = req.body.lastname;
+    let country = req.body.country
+    let password = req.body.password;
+    let email = req.body.email;
+    let image_url = req.body.image_url;
+    if (username == undefined || firstname == undefined ||
+        lastname == undefined  || country == undefined ||
+        password == undefined || email == undefined || image_url == undefined){
+      throw { status: 400, message: "Missing Parameters" };
+    }
     // valid parameters
     // username exists
     const users = await DButils.execQuery(
-      "SELECT username FROM dbo.users_tirgul"
+      "SELECT username FROM dbo.users"
     );
 
     if (users.find((x) => x.username === req.body.username))
@@ -24,7 +36,9 @@ router.post("/Register", async (req, res, next) => {
 
     // add the new username
     await DButils.execQuery(
-      `INSERT INTO dbo.users_tirgul (username, password) VALUES ('${req.body.username}', '${hash_password}')`
+      `INSERT INTO dbo.users (username, password, firstname, lastname, country, email, image_url)
+      VALUES ('${username}', '${hash_password}', '${firstname}', '${lastname}',
+       '${country}', '${email}', '${image_url}')`
     );
     res.status(201).send("user created");
   } catch (error) {
@@ -36,7 +50,7 @@ router.post("/Login", async (req, res, next) => {
   try {
     const user = (
       await DButils.execQuery(
-        `SELECT * FROM dbo.users_tirgul WHERE username = '${req.body.username}'`
+        `SELECT * FROM dbo.users WHERE username = '${req.body.username}'`
       )
     )[0];
     // user = user[0];
@@ -48,7 +62,7 @@ router.post("/Login", async (req, res, next) => {
     }
 
     // Set cookie
-    req.session.user_id = user.user_id;
+    req.session.username = user.username;
 
     // return cookie
     res.status(200).send("login succeeded");
