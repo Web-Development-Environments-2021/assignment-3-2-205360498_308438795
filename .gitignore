@@ -1,0 +1,5 @@
+.env
+.vscode
+node_modules
+package-lock.json
+sqltools_20210525180952_31080.log
