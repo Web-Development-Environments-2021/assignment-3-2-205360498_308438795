@@ -19,6 +19,8 @@ async function getLeagueDetails() {
       },
     }
   );
+
+  
   return {
     league_name: league.data.data.name,
     current_season_name: league.data.data.season.data.name,

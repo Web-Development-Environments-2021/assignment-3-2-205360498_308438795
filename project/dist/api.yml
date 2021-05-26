@@ -78,6 +78,9 @@ paths:
                   $ref: "#/components/schemas/League"
         "400":
           description: wrong input parameters
+
+        "404":
+          description:server didn't find the league details  
   /users/favoritePlayers:
     get:
       tags:
@@ -212,6 +215,80 @@ components:
           type: string
           description: current stage name
           example: Championship Round
+        nextGameDetails:
+          $ref: '#/components/schemas/MatchDetails'
+    MatchDetails:
+      type: object
+      required:
+        - Date
+        - Hour
+        - HomeTeam
+        - AwayTeam
+        - Staduim
+      properties:
+        Date:
+          type: string
+          format: date
+          description: the date of the game
+          example: "31/05/2012"
+        Hour:
+          type: string
+          format: hour
+          description: the time of the game 
+          example: "16:00"
+        HomeTeam:
+          $ref: '#/components/schemas/TeamDetails'
+        AwayTeam:
+          $ref: '#/components/schemas/TeamDetails'
+        Staduim:
+          type: string
+          description: Staduim's name
+          example: "Tedi"
+
+    Match:
+      type: object
+      required:
+        - MatchDetails
+        - HomeGoals
+        - AwayGoals
+        - EventCalender
+      properties:
+        MatchDetails:
+          $ref: '#/components/schemas/MatchDetails'
+        HomeGoals:
+          type: integer
+          description: the number of goals that Home team score
+          example: 2
+        AwayGoals:
+          type: integer
+          description: the number of goals that Away team score
+          example: 4
+        EventCalender:
+          $ref: '#/components/schemas/EventCalender'          
+          
+    TeamDetails:
+      type: object
+      required:
+        - ID
+        - TeamName
+        - Image-url
+      properties:
+        ID:
+          type: integer
+          description: Team's ID
+          example: 81
+        TeamName:
+          type: string
+          description: Team's name
+          example: "Arsenal"
+        Image-url:
+          type: string
+          format: url
+          description: Team's url for the logo team
+          example: "https://mir-s3-cdn-cf.behance.net/project_modules/disp/f6f6ff17697607.562d457a4296.png"              
+
+
+
     PlayerPreview:
       type: object
       properties:
@@ -232,6 +309,13 @@ components:
           type: string
           description: player's team name
           example: København
+
+
+
+
+
+
+
     Team:
       type: object
       properties:
