@@ -67,6 +67,9 @@ router.get("/favoriteMatches", async (req, res, next) => {
     }
     const results = await match_utils.getMatchesInfo(matches_ids_array);
     res.status(200).send(results);
+  } catch (error) {
+    next(error);
+  }
 });
   
 /**
@@ -97,6 +100,9 @@ router.post("/favoriteMatches", async (req, res, next) => {
     }
     await users_utils.markMatchAsFavorite(user_id, match_id);
     res.status(201).send("The match successfully saved as favorite");
+  } catch (error) {
+    next(error);
+  }
 });
   
   
