@@ -11,6 +11,8 @@ tags:
   - name: Teams
   - name: Games
 paths:
+
+
   /Register:
     post:
       tags:
@@ -28,6 +30,8 @@ paths:
           description: A new user has been added
         "400":
           description: wrong input parameters
+
+
   /Login:
     post:
       tags:
@@ -54,6 +58,8 @@ paths:
             # Note that the Set-Cookie header and securitySchemes are not connected in any way, and the Set-Header definition is for documentation purposes only.
         "401":
           description: Authentication failed
+
+
   /logout:
     post:
       tags:
@@ -62,10 +68,12 @@ paths:
       responses:
         "200":
           description: "the user has ben successfully logged out"
+
+
   /league/getDetails:
     get:
       tags:
-        - league
+        - League
       summary: Return the details about the current league
       responses:
         "200":
@@ -81,6 +89,61 @@ paths:
 
         "404":
           description:server didn't find the league details  
+
+
+  /users/favoriteMatches:
+    get:
+      tags:
+        - User
+        - Matches
+      summary: user favorite matches
+      description: sent to the client the current favorite matches
+      responses:
+        '200':
+          description: the details send successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MatchDetails"
+        '204':
+          description: there is no favorite matches
+        '401':
+          description: the user must be login to the system
+        '404':
+          description: server didn't find userName
+
+
+    post:
+      tags:
+        - User
+        - Matches
+      summary: adding a Match to favorite list
+      description: adding a new Match to the user favorite Match list
+      requestBody:
+        required: true
+        content:
+          application/json: 
+            schema:
+              type: object
+              properties:
+                match_id:
+                  type: integer
+                  description: Match ID 
+                  example: 55
+      responses: 
+        '201':
+          description: New Match was been added to the favorite Match list
+        '400':
+          description: worng input parameters
+        '401':
+          description: the user must be login to the system
+        '404':
+          description: server didn't find userName
+
+
+
   /users/favoritePlayers:
     get:
       tags:
@@ -99,6 +162,8 @@ paths:
                   $ref: "#/components/schemas/PlayerPreview"
         "401":
           description: user is not authorized
+
+
     post:
       summary: save player in the favorites list of a user
       tags:
@@ -111,7 +176,7 @@ paths:
               type: object
               properties:
                 playerId:
-                  type: string
+                  type: int
                   description: player's id which the user saved
                   example: 85
       responses:
@@ -119,6 +184,60 @@ paths:
           description: The player successfully saved as favorite
         "401":
           description: user is not authorized
+
+
+  /users/favoritesTeams:
+    get:
+      tags:
+        - User
+        - Team
+      summary: user favorite Teams
+      description: sent to the client the current favorite Teams array
+      responses:
+        '200':
+          description: the Teams's array send successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Team"
+        '201':
+          description: there is no favorite Teams
+        '401':
+          description: the user must be login to the system
+        '404':
+          description: server didn't find userName
+
+          
+    post:
+      tags:
+        - User
+        - Team
+      summary: adding a Team to favorite list
+      description: adding a new Team to the user favorite Team list
+      requestBody:
+        required: true
+        content:
+          application/json: 
+            schema:
+              type: object
+              properties:
+                team_id:
+                  type: int
+                  description: team's id which the user saved
+                  example: 85
+      responses: 
+        '201':
+          description: New Team was been added to the favorite Team list
+        '400':
+          description: worng input parameters
+        '401':
+          description: the user must be login to the system
+        '404':
+          description: server didn't find userName
+
+
   /teams/teamFullDetails/{teamId}:
     get:
       summary: get full deatils about a team
@@ -141,8 +260,138 @@ paths:
                 $ref: "#/components/schemas/Team"
         "404":
           description: teamId is not exists
+
+
+
+  /Search/Team/{NameToSearch}:
+    get:
+      tags:
+        - Search
+        - Team
+      summary: Search Team
+      description: sent to the client a list of Teams that contains the string NameToSearch
+      parameters:
+        - name: NameToSearch
+          in: path
+          description: string to search 
+          required: true
+          schema:
+            type: string
+            example: "Arse"
+      responses:
+        '200':
+          description: the search find teams
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Team"
+        '204':
+          description: the search didn't find results
+        '400':
+          description: invalid syntax
+
+
+  /Search/Player/{NameToSearch}:
+    get:
+      tags:
+        - Search
+        - Player
+      summary: Search Player
+      description: sent to the client a list of Players that contains the string NameToSearch
+      parameters:
+        - name: NameToSearch
+          in: path
+          description: string to search 
+          required: true
+          schema:
+            type: string
+            example: "Ede"
+      responses:
+        '200':
+          description: the search find Players
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PlayerPreview"
+        '204':
+          description: the search didn't find results
+        '400':
+          description: invalid syntax
+
+
+
+  /Search/Coach/{NameToSearch}:
+    get:
+      tags:
+        - Search
+        - Coach
+      summary: Search Coach
+      description: sent to the client a list of Coach that contains the string NameToSearch
+      parameters:
+        - name: NameToSearch
+          in: path
+          description: string to search 
+          required: true
+          schema:
+            type: string
+            example: "Ede"
+      responses:
+        '200':
+          description: the search find Coach
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/coach"
+        '204':
+          description: the search didn't find results
+        '400':
+          description: invalid syntax
+
+
+
+  /Matches/{Season}/{StageNum}:
+    get:
+      tags:
+        - Matches
+        - League
+      summary: show all the stage matches
+      description: sent to the client 2 list of games, one is prev games and the other is futher games of this stage
+      parameters:
+        - name: Season
+          in: path
+          description: string of the season
+          required: true
+          schema:
+            type: string
+            example: "2016/17"
+        - name: StageNum
+          in: path
+          description: the round number
+          required: true
+          schema:
+            type: integer
+            example: 38
+      responses:
+        '200':
+          description: the search find Coach
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StageMatchesArray'
+        '204':
+          description: the search didn't find results
+        '400':
+          description: invalid syntax
+
 components:
   schemas:
+
     User:
       type: object
       properties:
@@ -184,6 +433,7 @@ components:
           description: URL for the user's image
           example: https://cloudinary.com/
       description: Model containing user info
+
     LoginScheme:
       type: object
       properties:
@@ -200,6 +450,8 @@ components:
           format: password
           description: password conatins at least one number and one special char
           example: naor@55
+
+
     League:
       type: object
       properties:
@@ -217,6 +469,8 @@ components:
           example: Championship Round
         nextGameDetails:
           $ref: '#/components/schemas/MatchDetails'
+
+
     MatchDetails:
       type: object
       required:
@@ -237,13 +491,14 @@ components:
           description: the time of the game 
           example: "16:00"
         HomeTeam:
-          $ref: '#/components/schemas/TeamDetails'
+          $ref: '#/components/schemas/Team'
         AwayTeam:
-          $ref: '#/components/schemas/TeamDetails'
+          $ref: '#/components/schemas/Team'
         Staduim:
           type: string
           description: Staduim's name
           example: "Tedi"
+
 
     Match:
       type: object
@@ -251,6 +506,7 @@ components:
         - MatchDetails
         - HomeGoals
         - AwayGoals
+        - Referee
         - EventCalender
       properties:
         MatchDetails:
@@ -263,29 +519,63 @@ components:
           type: integer
           description: the number of goals that Away team score
           example: 4
+        Referee:
+          type: integer
+          description: referee id 
+          example: 4
         EventCalender:
           $ref: '#/components/schemas/EventCalender'          
-          
-    TeamDetails:
+     
+
+
+    EventCalender:
+      type: array
+      items:
+        $ref: '#/components/schemas/MatchEvent'
+
+    MatchEvent:
       type: object
       required:
-        - ID
-        - TeamName
-        - Image-url
+        - Date
+        - Hour
+        - TimeInMatch
+        - EventDescription
       properties:
-        ID:
+        Date:
+          type: string
+          format: date
+          description: the date of the game
+          example: "31/05/2012"
+        Hour:
+          type: string
+          format: hour
+          description: the time of the game 
+          example: "16:00"
+        TimeInMatch:
           type: integer
-          description: Team's ID
-          example: 81
-        TeamName:
+          description: the time in the game 
+          example: 65
+        EventDescription:
           type: string
-          description: Team's name
-          example: "Arsenal"
-        Image-url:
-          type: string
-          format: url
-          description: Team's url for the logo team
-          example: "https://mir-s3-cdn-cf.behance.net/project_modules/disp/f6f6ff17697607.562d457a4296.png"              
+          description: >
+            Event description from the next list
+            "GOAL","OFFSIDE","FOUL","RED_CARD","YELLOW_CARD","INJURY","SUB".
+          example: "GOAL"
+
+    StageMatchesArray:
+      type: object
+      required:
+        - PreMatches
+        - futherMatches
+      properties:
+        PreMatches:
+          type: array
+          items:
+            $ref: '#/components/schemas/MatchDetails'
+        futherMatches:
+          type: array
+          items:
+            $ref: '#/components/schemas/Match'
 
 
 
@@ -296,7 +586,7 @@ components:
           type: string
           description: player's name
           example: Sten Michael Grytebust
-        image:
+        image_url:
           type: string
           description: player's image
           format: URL
@@ -310,11 +600,26 @@ components:
           description: player's team name
           example: København
 
-
-
-
-
-
+    CoachPreview:
+      type: object
+      required:
+        - name
+        - team_name
+        - image-url
+      properties:
+        name:
+          type: string
+          description: Coach's name
+          example: "Zinedine zidan"
+        team_name:
+          type: string
+          description: player's team name
+          example: København
+        image-url:
+          type: string
+          format: url
+          description: url for the Coach's image
+          example: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Zinedine_Zidane_by_Tasnim_03.jpg/330px-Zinedine_Zidane_by_Tasnim_03.jpg"
 
     Team:
       type: object
@@ -323,6 +628,11 @@ components:
           type: string
           description: team name
           example: København
+        image_url:
+          type: string
+          format: url
+          description: Team's url for the logo team
+          example: "https://mir-s3-cdn-cf.behance.net/project_modules/disp/f6f6ff17697607.562d457a4296.png" 
         players:
           type: array
           items:
