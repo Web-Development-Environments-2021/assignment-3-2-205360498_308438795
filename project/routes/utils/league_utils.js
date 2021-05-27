@@ -1,3 +1,4 @@
+const { match } = require("assert");
 const axios = require("axios");
 const match_utils = require("./match_utils");
 const LEAGUE_ID = 271;
@@ -21,7 +22,7 @@ async function getLeagueDetails() {
     }
   );
 
-  let nextGameDeatails = await match_utils.getNextGameDeatails(); // table or param ?!?!?
+  let nextGameDeatails = await match_utils.getNextGameDetails(); // table or param ?!?!?
 
   return {
     league_name: league.data.data.name,

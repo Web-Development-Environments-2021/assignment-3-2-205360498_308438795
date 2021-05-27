@@ -91,7 +91,7 @@ paths:
           description:server didn't find the league details  
 
 
-  /User/favoritesMatches:
+  /users/favoriteMatches:
     get:
       tags:
         - User
@@ -104,8 +104,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/favoritesMatchesArray'
-        '201':
+                type: array
+                items:
+                  $ref: "#/components/schemas/MatchDetails"
+        '204':
           description: there is no favorite matches
         '401':
           description: the user must be login to the system
@@ -184,7 +186,7 @@ paths:
           description: user is not authorized
 
 
-  /User/favoritesTeams:
+  /users/favoritesTeams:
     get:
       tags:
         - User

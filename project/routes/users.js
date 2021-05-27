@@ -3,8 +3,7 @@ var router = express.Router();
 const DButils = require("./utils/DButils");
 const users_utils = require("./utils/users_utils");
 const players_utils = require("./utils/players_utils");
-const match_utils = require("./utils/match_utils");
-const match_utils = require("./utils/teams_utils");
+const match_utils = require("./utils/match_utils")
 
 /**
  * Authenticate all incoming requests by middleware
@@ -55,6 +54,21 @@ router.get("/favoritePlayers", async (req, res, next) => {
   }
 });
 
+router.get("/favoriteMatches", async (req, res, next) => {
+  try {
+    const user_id = req.session.user_id;
+    // let favorite_players = {};
+    const matches_ids = await users_utils.getFavoriteMatches(user_id);
+    let matches_ids_array = [];
+    matches_ids.map((element) => matches_ids_array.push(element.MatchId)); //extracting the matches ids into array
+    // check if user doesnt have favorite matches
+    if(matches_ids_array.length==0){
+      res.status(204).send("there is no favorite matches")
+    }
+    const results = await match_utils.getMatchesInfo(matches_ids_array);
+    res.status(200).send(results);
+});
+  
 /**
  * This path gets body with match deatails and save this match in the DB
  */
@@ -70,6 +84,22 @@ router.get("/favoritePlayers", async (req, res, next) => {
   }
 });
 
+
+
+router.post("/favoriteMatches", async (req, res, next) => {
+  try {
+    const user_id = req.session.user_id;
+    const match_id = req.body.match_id;
+    let matchExist = await match_utils.checkiFMatchExist(match_id); 
+    if(!matchExist){
+      res.status(400).send("worng input parameters")
+      return;
+    }
+    await users_utils.markMatchAsFavorite(user_id, match_id);
+    res.status(201).send("The match successfully saved as favorite");
+});
+  
+  
 /**
  * This path gets body with match deatails and save this match in the DB
  */
@@ -98,7 +128,6 @@ router.get("/getAllMatches", async (req, res, next) => {
     next(error);
   }
 });
-
 
 // /**
 //  * This path gets body with team_id and save this team in the favorites list of the logged-in user
@@ -130,7 +159,5 @@ router.get("/getAllMatches", async (req, res, next) => {
 //     next(error);
 //   }
 // });
-
-
 
 module.exports = router;
