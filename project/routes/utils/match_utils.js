@@ -2,7 +2,8 @@ const DB = require("./DButils");
 const axios = require("axios");
 const { DateTime } = require("mssql");
 
-async function getNextGameDeatails(){
+
+async function getNextGameDetails(){
     let games = await DB.execQuery('SELECT') /// sql command to get games that dont played yet
     if(games.length==0){
         return null;
@@ -24,6 +25,7 @@ async function getNextGameDeatails(){
 
 
 async function getTeamNameFromApi(teamId){
+
     let teamName = await axios.get(
         `https://soccer.sportmonks.com/api/v2.0/teams/${teamId}`,
         {
@@ -32,7 +34,7 @@ async function getTeamNameFromApi(teamId){
           },
         })
 
-    return teamName    
+    return teamName.data.data.name    
 }
 
 async function geTimeFromDateTime(datetime){
@@ -47,30 +49,57 @@ async function geTimeFromDateTime(datetime){
     return postTime
 }
 
+async function getDateFromDateTime(datetime){
+    let data= new Date(datetime)
+    let years = data.getFullYear();
+    let month = data.getMonth();
+    let days = data.getDate();
+    return days+':'+month+':'+years
+}
+
+async function checkiFMatchExist(match_id){
+    // TODO - check if match exist in matches db.
+  let checkIfExist = await DB.execQuery(`SELECT TOP 1 1 FROM dbo.matches where MatchID='${match_id}'`);
+  let match_id_array = [];
+    checkIfExist.map((element) => match_id_array.push(element)); //extracting the match id into array for checking if exist
+  if(match_id_array.length==0){
+      return false;
+    
+  }
+  return true;
+
+}
+
 async function getMatchesInfo(matches_ids_list) {
-     let homePromises = [];
-     let awayPromises = [];
-     let matchDateTime = []
-    let matchesDetails = [];
-    let stadiums = [];
+    //  let homePromises = [];
+    //  let awayPromises = [];
+    //  let matchDateTime = []
+    // let matchesDetails = [];
+    // let stadiums = [];
+    matchesPrev = []
     for(let i =0;i<matches_ids_list.length;i++){
-        let match = await DB.execQuery(`SELECT HomeTeamId,AwayTeamId,MatchDate,StadiumID AS homeTeam,guestTeam,fulldate,stadium FROM dbo.matches where MatchId='${matches_ids_list[i]}'`);
-        homePromises.push(match.homeTeam);
-        awayPromises.push(match.guesteam);
-        matchDateTime.push(match.fulldate);
-        stadiums.push(match.stadium);
+        let match = await DB.execQuery(`SELECT HomeTeamId,AwayTeamId,MatchDate,StadiumID FROM dbo.matches where MatchId='${matches_ids_list[i]}'`);
+        date = getDateFromDateTime(match[0].MatchDate)
+        homeTeam = getTeamNameFromApi(match[0].HomeTeamId);
+        awayTeam = getTeamNameFromApi(match[0].AwayTeamId);
+        matchtime = geTimeFromDateTime(match[0].MatchDate);
+        stadium = match[0].StadiumID;
+        
+
+        let matchDet = 
+        {
+            Date:date,
+            Hour:matchtime,
+            HomeTeam:homeTeam,
+            AwayTeam:awayTeam,
+            Staduim:stadium
+            
+         };
+         matchesPrev.push(matchDet);
 
 
     }
-     
-
-    matches_ids_list.map((id) =>
-      promises.push(
-        
-      )
-    );
-    // let players_info = await Promise.all(promises);
-    return extractRelevantPlayerData(players_info);
+    return matchesPrev;
   }
 
 //   params: {
@@ -79,4 +108,6 @@ async function getMatchesInfo(matches_ids_list) {
 //   },
 //   axios.get(`${api_domain}/players/${id}`
 exports.getMatchesInfo = getMatchesInfo;
-exports.getNextGameDeatails = getNextGameDeatails;
+exports.getNextGameDetails = getNextGameDetails;
+
+exports.checkiFMatchExist = checkiFMatchExist;

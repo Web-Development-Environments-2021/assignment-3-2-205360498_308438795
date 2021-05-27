@@ -15,7 +15,6 @@ async function getFavoritePlayers(user_id) {
 
 
 async function markMatchAsFavorite(user_id, MatchId) {
-  // TODO - check if match exist in matches db.
   await DButils.execQuery(
     `insert into dbo.FavoriteMatches values ('${user_id}',${MatchId})`
   );

@@ -82,6 +82,11 @@ router.post("/favoriteMatches", async (req, res, next) => {
   try {
     const user_id = req.session.user_id;
     const match_id = req.body.match_id;
+    let matchExist = await match_utils.checkiFMatchExist(match_id); 
+    if(!matchExist){
+      res.status(400).send("worng input parameters")
+      return;
+    }
     await users_utils.markMatchAsFavorite(user_id, match_id);
     res.status(201).send("The match successfully saved as favorite");
   } catch (error) {
