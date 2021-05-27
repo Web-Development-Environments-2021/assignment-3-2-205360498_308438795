@@ -24,13 +24,13 @@ async function getLeagueDetails() {
 
   let nextGameDeatails = await match_utils.getNextGameDetails(); // table or param ?!?!?
 
-  
   return {
     league_name: league.data.data.name,
     current_season_name: league.data.data.season.data.name,
     current_stage_name: stage.data.data.name,
     // next game details should come from DB
     nextGameDeatails: nextGameDeatails
+
   };
 }
 exports.getLeagueDetails = getLeagueDetails;

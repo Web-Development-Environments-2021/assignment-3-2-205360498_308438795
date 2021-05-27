@@ -27,8 +27,22 @@ async function getFavoriteMatches(user_id) {
   return matches_ids;
 }
 
+
+// async function markTeamAsFavorite(user_id, team_id) {
+//   await DButils.execQuery(
+//     `insert into dbo.FavoriteTeams values ('${user_id}',${team_id})`
+//   );
+// }
+
+// async function getFavoriteTeams(user_id) {
+//   const team_ids = await DButils.execQuery(
+//     `select team_id from dbo.FavoriteTeams where user_id='${user_id}'`
+//   );
+//   return team_ids;
+// }
+
 exports.markMatchAsFavorite = markMatchAsFavorite;
 exports.getFavoriteMatches = getFavoriteMatches;
-
 exports.markPlayerAsFavorite = markPlayerAsFavorite;
 exports.getFavoritePlayers = getFavoritePlayers;
+
