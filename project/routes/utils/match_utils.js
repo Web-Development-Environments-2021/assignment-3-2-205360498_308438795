@@ -3,7 +3,7 @@ const DB = require("./DButils");
 const axios = require("axios");
 const { DateTime } = require("mssql");
 
-async function getNextGameDeatails(){
+async function getNextGameDetails(){
     let games = await DButils.execQuery(`SELECT * FROM dbo.matches WHERE Played = 0`); /// sql command to get games that dont played yet
     if(games.length==0){
         return null;
@@ -151,7 +151,6 @@ async function getAllMatches(match_deatails) {
     console.log(matches);
     return matches;
 }
-exports.getNextGameDeatails = getNextGameDeatails;
 exports.addMatchToDB = addMatchToDB;
 exports.updateMatchInDB = updateMatchInDB;
 exports.updateEventCalenderToMatch = updateEventCalenderToMatch;
@@ -159,4 +158,3 @@ exports.getAllMatches = getAllMatches;
 exports.getMatchesInfo = getMatchesInfo;
 exports.getNextGameDetails = getNextGameDetails;
 exports.checkiFMatchExist = checkiFMatchExist;
-
