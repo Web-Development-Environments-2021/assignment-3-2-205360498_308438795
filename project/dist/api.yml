@@ -263,7 +263,7 @@ paths:
 
 
 
-  /Search/Team/{NameToSearch}:
+  /search/team/{NameToSearch}:
     get:
       tags:
         - Search
@@ -293,7 +293,7 @@ paths:
           description: invalid syntax
 
 
-  /Search/Player/{NameToSearch}:
+  /search/player/{NameToSearch}:
     get:
       tags:
         - Search
@@ -322,36 +322,6 @@ paths:
         '400':
           description: invalid syntax
 
-
-
-  /Search/Coach/{NameToSearch}:
-    get:
-      tags:
-        - Search
-        - Coach
-      summary: Search Coach
-      description: sent to the client a list of Coach that contains the string NameToSearch
-      parameters:
-        - name: NameToSearch
-          in: path
-          description: string to search 
-          required: true
-          schema:
-            type: string
-            example: "Ede"
-      responses:
-        '200':
-          description: the search find Coach
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/coach"
-        '204':
-          description: the search didn't find results
-        '400':
-          description: invalid syntax
 
 
 
