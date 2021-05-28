@@ -51,5 +51,38 @@ async function getPlayersByTeam(team_id) {
   return players_info;
 }
 
+async function getplayersByName(name) {
+  let players_list = [];
+  const players = await axios.get(`${api_domain}/players/search/${name}`, {
+    params: {
+      api_token: process.env.api_token,
+      include: "team,position",
+    },
+  });
+  players.data.data.forEach(player => {
+    let team_name;
+    let position_id;
+    let position_name;
+    if(player.team == undefined){
+      team_name = null;
+    }
+    else{
+      team_name = player.team.data.name;
+    }
+    if(player.position == undefined){
+      position_id = null;
+      position_name = null;
+    }
+    else{
+      position_id = player.position.data.id;
+      position_name = player.position.data.name;
+    }
+    players_list.push({"firstname": player.firstname, "lastname": player.lastname,"image_path": player.image_path ,
+     "team_name": team_name, "position_num": position_id,"position_name": position_name})  
+  });
+  return players_list;
+}
+
 exports.getPlayersByTeam = getPlayersByTeam;
 exports.getPlayersInfo = getPlayersInfo;
+exports.getplayersByName = getplayersByName;
