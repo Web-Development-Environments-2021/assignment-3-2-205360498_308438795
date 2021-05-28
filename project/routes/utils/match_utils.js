@@ -3,8 +3,37 @@ const DB = require("./DButils");
 const axios = require("axios");
 const { DateTime } = require("mssql");
 
+
+async function createMatchPrev(Game){
+  console.log(Game);
+  console.log(Game.MatchDate)
+  homeTeamName = await getTeamNameFromApi(Game.HomeTeamId);
+  awayTeamName = await getTeamNameFromApi(Game.AwayTeamId);
+  stadium = Game.StadiumID;
+  gamehour = await geTimeFromDateTime(Game.MatchDate);
+  gamedate = await getDateFromDateTime(Game.MatchDate);
+  console.log(homeTeamName)
+  console.log(awayTeamName)
+  console.log(gamehour)
+  console.log(gamedate)
+  console.log(stadium);
+
+
+  return{
+    Date:gamedate,
+    Hour:gamehour,
+    HomeTeam:homeTeamName,
+    AwayTeam:awayTeamName,
+    Stadium:stadium
+
+  }
+
+
+
+}
+
 async function getNextGameDetails(){
-    let games = await DButils.execQuery(`SELECT * FROM dbo.matches WHERE Played = 0`); /// sql command to get games that dont played yet
+    let games = await DB.execQuery(`SELECT * FROM dbo.matches WHERE Played = 0`); /// sql command to get games that dont played yet
     if(games.length==0){
         return null;
     }
@@ -15,7 +44,8 @@ async function getNextGameDetails(){
             nextGame = games[i];
         }
     }
-    return nextGame // check object ?!?!
+    matchPrev = await createMatchPrev(nextGame);
+    return matchPrev // check object ?!?!
 }
 
 async function getTeamNameFromApi(teamId){
@@ -73,10 +103,10 @@ async function getMatchesInfo(matches_ids_list) {
     matchesPrev = []
     for(let i =0;i<matches_ids_list.length;i++){
         let match = await DB.execQuery(`SELECT HomeTeamId,AwayTeamId,MatchDate,StadiumID FROM dbo.matches where MatchId='${matches_ids_list[i]}'`);
-        date = getDateFromDateTime(match[0].MatchDate)
-        homeTeam = getTeamNameFromApi(match[0].HomeTeamId);
-        awayTeam = getTeamNameFromApi(match[0].AwayTeamId);
-        matchtime = geTimeFromDateTime(match[0].MatchDate);
+        date = await getDateFromDateTime(match[0].MatchDate)
+        homeTeam = await getTeamNameFromApi(match[0].HomeTeamId);
+        awayTeam = await getTeamNameFromApi(match[0].AwayTeamId);
+        matchtime = await geTimeFromDateTime(match[0].MatchDate);
         stadium = match[0].StadiumID;
         
 
