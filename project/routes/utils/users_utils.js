@@ -27,6 +27,17 @@ async function getFavoriteMatches(user_id) {
   return matches_ids;
 }
 
+async function checkIfMatchInFavo(user_id,MatchId){
+  let checkIfExist = await DB.execQuery(`SELECT TOP 1 1 FROM dbo.Fav where MatchID='${match_id} AND user_id='${user_id}'`);
+  let match_id_array = [];
+    checkIfExist.map((element) => match_id_array.push(element)); //extracting the match id into array for checking if exist
+  if(match_id_array.length==0){
+      return false;
+    
+  }
+  return true;
+}
+
 
 // async function markTeamAsFavorite(user_id, team_id) {
 //   await DButils.execQuery(
@@ -46,3 +57,4 @@ exports.getFavoriteMatches = getFavoriteMatches;
 exports.markPlayerAsFavorite = markPlayerAsFavorite;
 exports.getFavoritePlayers = getFavoritePlayers;
 
+exports.checkIfMatchInFavo = checkIfMatchInFavo;

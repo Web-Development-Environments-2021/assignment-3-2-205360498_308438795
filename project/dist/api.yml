@@ -111,8 +111,7 @@ paths:
           description: there is no favorite matches
         '401':
           description: the user must be login to the system
-        '404':
-          description: server didn't find userName
+
 
 
     post:
@@ -135,12 +134,12 @@ paths:
       responses: 
         '201':
           description: New Match was been added to the favorite Match list
+        '204':
+          description: match already in your favorite list  
         '400':
           description: worng input parameters
         '401':
           description: the user must be login to the system
-        '404':
-          description: server didn't find userName
 
 
 
