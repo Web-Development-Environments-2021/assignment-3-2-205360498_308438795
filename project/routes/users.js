@@ -23,6 +23,11 @@ router.use(async function (req, res, next) {
   }
 });
 
+//
+const association_Member = require("./associationMember");
+router.use("/associationMember", association_Member);
+
+
 /**
  * This path gets body with playerId and save this player in the favorites list of the logged-in user
  */
@@ -71,21 +76,6 @@ router.get("/favoriteMatches", async (req, res, next) => {
     next(error);
   }
 });
-  
-/**
- * This path gets body with match deatails and save this match in the DB
- */
- router.post("/addMatch", async (req, res, next) => {
-  try {
-    const user_id = req.session.user_id;
-    // need to check if the user is auth to add match to DB
-    const match_deatails = req.body;
-    await match_utils.addMatchToDB(match_deatails);
-    res.status(201).send("The match successfully saved");
-  } catch (error) {
-    next(error);
-  }
-});
 
 
 
@@ -109,24 +99,8 @@ router.post("/favoriteMatches", async (req, res, next) => {
     next(error);
   }
 });
-  
-  
-/**
- * This path gets body with match deatails and save this match in the DB
- */
- router.put("/updateMatch", async (req, res, next) => {
-  try {
-    const user_id = req.session.user_id;
-    // need to check if the user is auth to add match to DB
-    const match_id = req.body.match_id;
-    // need to check if the match exsist in db
-    const match_deatails = req.body;
-    await match_utils.updateMatchInDB(match_deatails);
-    res.status(200).send("The match update successfully");
-  } catch (error) {
-    next(error);
-  }
-});
+
+
 
 /**
  * This path gets get All Matches in the DB
