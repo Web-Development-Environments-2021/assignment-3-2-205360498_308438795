@@ -1,5 +1,5 @@
 
-const DB = require("./DButils");
+const DButils = require("./DButils");
 const axios = require("axios");
 const { DateTime } = require("mssql");
 
@@ -33,7 +33,7 @@ async function createMatchPrev(Game){
 }
 
 async function getNextGameDetails(){
-    let games = await DB.execQuery(`SELECT * FROM dbo.matches WHERE Played = 0`); /// sql command to get games that dont played yet
+    let games = await DButils.execQuery(`SELECT * FROM dbo.matches WHERE Played = 0`); /// sql command to get games that dont played yet
     if(games.length==0){
         return null;
     }
@@ -83,7 +83,7 @@ async function getDateFromDateTime(datetime){
 
 async function checkiFMatchExist(match_id){
     // TODO - check if match exist in matches db.
-  let checkIfExist = await DB.execQuery(`SELECT TOP 1 1 FROM dbo.matches where MatchID='${match_id}'`);
+  let checkIfExist = await DButils.execQuery(`SELECT TOP 1 1 FROM dbo.matches where MatchID='${match_id}'`);
   let match_id_array = [];
     checkIfExist.map((element) => match_id_array.push(element)); //extracting the match id into array for checking if exist
   if(match_id_array.length==0){
@@ -102,7 +102,7 @@ async function getMatchesInfo(matches_ids_list) {
     // let stadiums = [];
     matchesPrev = []
     for(let i =0;i<matches_ids_list.length;i++){
-        let match = await DB.execQuery(`SELECT HomeTeamId,AwayTeamId,MatchDate,StadiumID FROM dbo.matches where MatchId='${matches_ids_list[i]}'`);
+        let match = await DButils.execQuery(`SELECT HomeTeamId,AwayTeamId,MatchDate,StadiumID FROM dbo.matches where MatchId='${matches_ids_list[i]}'`);
         date = await getDateFromDateTime(match[0].MatchDate)
         homeTeam = await getTeamNameFromApi(match[0].HomeTeamId);
         awayTeam = await getTeamNameFromApi(match[0].AwayTeamId);
@@ -135,7 +135,7 @@ async function addMatchToDB(match_deatails) {
     let referee = match_deatails.referee;
     let played = 0;
     await DButils.execQuery(
-        `insert into dbo.matches (HomeTeamId, AwayTeamId, MatchDate, StadiumID, Played, Referee) 
+        `insert into dbo.matches (HomeTeamId, AwayTeamId, MatchDate, StadiumID, Played, RefereeID) 
         values ('${home_team}', '${away_team}','${date}','${stadium}','${played}','${referee}')`
       );
     console.log(match_deatails);
