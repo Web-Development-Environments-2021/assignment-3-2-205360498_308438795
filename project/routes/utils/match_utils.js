@@ -30,6 +30,26 @@ async function createMatchPrev(Game){
 
 
 
+
+
+}
+// get all stage matches 
+async function getCurrentStageMatches(){
+  let futureMatches = await DB.execQuery(`SELECT HomeTeamID , AwayTeamId , MatchDate , StadiumID form dbo.matches WHERE MatchDate> CURDATE()`)
+  let pastMatches = await DB.execQuery(`SELECT HomeTeamID , AwayTeamId , MatchDate , StadiumID form dbo.matches WHERE MatchDate< CURDATE()`)
+  let resFutureMatches = []
+  let resPastMatches = []
+  // need to get at least 3 events in past matches
+  
+
+
+  // future matches should represent as MatchPrev
+  let i =0;
+  for(i;i<futureMatches.length;i++){
+    resFutureMatches.push(createMatchPrev(futureMatches[i]))
+
+  }
+
 }
 
 async function getNextGameDetails(){

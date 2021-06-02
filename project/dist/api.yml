@@ -208,7 +208,7 @@ paths:
         '404':
           description: server didn't find userName
 
-          
+        
     post:
       tags:
         - User
@@ -324,7 +324,7 @@ paths:
 
 
 
-  /Matches/{Season}/{StageNum}:
+  /league/{Season}/{StageNum}:
     get:
       tags:
         - Matches
