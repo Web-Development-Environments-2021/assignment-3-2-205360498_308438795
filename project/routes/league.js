@@ -11,4 +11,16 @@ router.get("/getDetails", async (req, res, next) => {
   }
 });
 
+// get all stage matches
+
+router.get("/getSatgeMatches", async (req, res, next) => {
+  try {
+    const league_matches = await league_utils.getStageMatches();
+    res.send(league_details);
+  } catch (error) {
+    next(error);
+  }
+});
+
+
 module.exports = router;
