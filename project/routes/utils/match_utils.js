@@ -35,12 +35,35 @@ async function createMatchPrev(Game){
 }
 // get all stage matches 
 async function getCurrentStageMatches(){
-  let futureMatches = await DB.execQuery(`SELECT HomeTeamID , AwayTeamId , MatchDate , StadiumID form dbo.matches WHERE MatchDate> CURDATE()`)
-  let pastMatches = await DB.execQuery(`SELECT HomeTeamID , AwayTeamId , MatchDate , StadiumID form dbo.matches WHERE MatchDate< CURDATE()`)
+  let futureMatches = await DB.execQuery(`SELECT HomeTeamID , AwayTeamId , MatchDate , StadiumID form dbo.matches WHERE Played = 0`)
+  let pastMatches = await DB.execQuery(`SELECT * form dbo.matches WHERE Played = 1`)
   let resFutureMatches = []
   let resPastMatches = []
-  // need to get at least 3 events in past matches
   
+  // need to get at least 3 events in past matches
+  for(let i =0;i<pastMatches.length;i++){
+    // get events for each game in db
+    let events = await DB.execQuery(`SELECT * FROM dbo.Events WHERE MatchId='${pastMatches[i].MatchId}'`);
+    let resEvents = []
+    for(let j =0;j<events.length;j++){
+      jsonEvent = {
+        Date:events[j].event_date,
+        Hour:events[j].event_time,
+        TimeInMatch:events[j].minute,
+        EventDescription:events[j].game_event
+      };
+      resEvents.push(jsonEvent);
+
+    }
+    let CurMatch = createMatchPrev(pastMatches[i])
+    CurMatch["HomeGoals"] = pastMatches[i].HomeTeamGoals;
+    CurMatch["HomeGoals"] = pastMatches[i].AwayTeamGoals;
+    CurMatch["EventCalender"] = resEvents;
+    resPastMatches.push(CurMatch);
+
+
+
+  }
 
 
   // future matches should represent as MatchPrev
@@ -50,7 +73,28 @@ async function getCurrentStageMatches(){
 
   }
 
+  return{
+    PreMatches:resPastMatches,
+    FutureMatches:resFutureMatches
+  }
+
 }
+
+
+// //get 3 next matches for show in home page
+// async function getNext3Matches(user_id){
+//   // get future games in favo
+//   let teamFutureMatches = await DB.execQuery(`SELECT HomeTeamID , AwayTeamId , MatchDate , StadiumID form dbo.matches INNER JOIN  dbo.favoriteMatches ON dbo.matches.MatchId=dbo.favoriteMatches.MatchId WHERE user_id ='${user_id} AND played = 0' ORDER BY MatchDate DESC LIMIT 3`);
+//   if(teamFutureMatches.length==0){
+//     return
+//   }
+//   let resMatches = [];
+//   for(let i=0;i<teamFutureMatches.length;i++){
+//     resMatches.push(createMatchPrev(teamFutureMatches[i]));
+//   }
+//   return resMatches;
+
+// }
 
 async function getNextGameDetails(){
     let games = await DB.execQuery(`SELECT * FROM dbo.matches WHERE Played = 0`); /// sql command to get games that dont played yet
@@ -208,3 +252,5 @@ exports.getAllMatches = getAllMatches;
 exports.getMatchesInfo = getMatchesInfo;
 exports.getNextGameDetails = getNextGameDetails;
 exports.checkiFMatchExist = checkiFMatchExist;
+
+exports.getCurrentStageMatches  = getCurrentStageMatches;

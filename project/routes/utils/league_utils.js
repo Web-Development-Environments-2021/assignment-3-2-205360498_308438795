@@ -42,4 +42,6 @@ async function getLeagueDetails() {
 
   };
 }
+
+exports.getStageMatches = getStageMatches;
 exports.getLeagueDetails = getLeagueDetails;
