@@ -65,6 +65,6 @@ async function getLeagueDetails() {
   };
 }
 
-
 exports.teamIsInLeague = teamIsInLeague;
+exports.getStageMatches = getStageMatches;
 exports.getLeagueDetails = getLeagueDetails;

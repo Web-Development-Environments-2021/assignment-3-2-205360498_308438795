@@ -541,7 +541,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MatchDetails'
-        futherMatches:
+        FutureMatches:
           type: array
           items:
             $ref: '#/components/schemas/Match'
