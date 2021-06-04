@@ -6,15 +6,14 @@ GO
 -- Create the table in the specified schema
 CREATE TABLE dbo.matches
 (
-    MatchId INT IDENTITY(1,1) PRIMARY KEY, -- primary key column
-    HomeTeamId [NVARCHAR](50) NOT NULL,
-    AwayTeamId [NVARCHAR](50) NOT NULL,
+    Match_Id INT IDENTITY(1,1) PRIMARY KEY, -- primary key column
+    HomeTeam_Id INT NOT NULL,
+    AwayTeam_Id INT NOT NULL,
     MatchDate DATETIME NOT NULL,
-    StadiumID INT NOT NULL,
+    Stadium_name [NVARCHAR](50) NOT NULL,
     HomeTeamGoals INT , 
     AwayTeamGoals INT ,
     RefereeID INT,   --  refDB
-    EventCalender INT,  --event DB
     Played BIT NOT NULL, -- 0 not played yet , 1 played !!
 
     -- specify more columns here

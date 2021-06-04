@@ -27,11 +27,6 @@ async function createMatchPrev(Game){
     Stadium:stadium
 
   }
-
-
-
-
-
 }
 // get all stage matches 
 async function getCurrentStageMatches(){
@@ -245,6 +240,13 @@ async function getAllMatches(match_deatails) {
     console.log(matches);
     return matches;
 }
+
+async function removeMatchFromFavorite(match_id) {
+  await DButils.execQuery(
+      `DELETE FROM dbo.FavoriteMathes WHERE MatchId= '${match_id}'`
+    );
+  return;
+}
 exports.addMatchToDB = addMatchToDB;
 exports.updateMatchInDB = updateMatchInDB;
 exports.updateEventCalenderToMatch = updateEventCalenderToMatch;
@@ -252,5 +254,6 @@ exports.getAllMatches = getAllMatches;
 exports.getMatchesInfo = getMatchesInfo;
 exports.getNextGameDetails = getNextGameDetails;
 exports.checkiFMatchExist = checkiFMatchExist;
-
+exports.removeMatchFromFavorite = removeMatchFromFavorite;
 exports.getCurrentStageMatches  = getCurrentStageMatches;
+

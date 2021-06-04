@@ -2,6 +2,7 @@ const axios = require("axios");
 const api_domain = "https://soccer.sportmonks.com/api/v2.0";
 
 
+
 async function getTeamsByName(name) {
     let teams_list = [];
     const teams = await axios.get(`${api_domain}/teams/search/${name}`, {
