@@ -11,7 +11,7 @@ CREATE TABLE dbo.Events
     event_time TIME NOT NULL,
     minute INT NOT NULL,
     game_event [NVARCHAR](50) NOT NULL, --- goal , offside , foul ,red card , yellow card , injury , substitute
-    MatchId INT NOT NULL FOREIGN KEY REFERENCES dbo.matches(MatchId),
+    MatchId INT NOT NULL FOREIGN KEY REFERENCES dbo.matches(Match_Id),
     -- specify more columns here
 );
 GO

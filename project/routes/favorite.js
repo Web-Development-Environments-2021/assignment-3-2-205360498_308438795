@@ -4,6 +4,7 @@ const DButils = require("./utils/DButils");
 const users_utils = require("./utils/users_utils");
 const players_utils = require("./utils/players_utils");
 const match_utils = require("./utils/match_utils");
+const favoriteMatches_utils = require("./utils/favoriteMatches_utils");
 
 /**
  * This path gets body with playerId and save this player in the favorites list of the logged-in user
@@ -62,12 +63,17 @@ const match_utils = require("./utils/match_utils");
       const match_id = req.body.match_id;
       let matchExist = await match_utils.checkiFMatchExist(match_id); 
       if(!matchExist){
-        res.status(400).send("worng input parameters")
+        res.status(400).send("worng input parameters");
         return;
       }
-      let matchAlreadyInFavorites = await users_utils.checkIfMatchInFavo(user_id,match_id);
-      if(!matchAlreadyInFavorites){
-        res.status(204).send("match already in your favorite list")
+      let match_was_played = await match_utils.matchPastTheDate(match_id);
+      if(match_was_played){
+        res.status(400).send("the match is already played and cant be added to favorite");
+        return;
+      }
+      let matchAlreadyInFavorites = await favoriteMatches_utils.checkIfMatchInFavo(user_id,match_id);
+      if(matchAlreadyInFavorites){
+        res.status(204).send("match already in your favorite list");
         return;
       }
       await users_utils.markMatchAsFavorite(user_id, match_id);

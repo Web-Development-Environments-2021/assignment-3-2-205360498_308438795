@@ -18,7 +18,11 @@ async function teamIsInLeague(team_id){
       },
     }
   );
-  if(league.data.data.league_id != LEAGUE_ID){
+  if(league.data.data[0] == null){
+    return false;
+  }
+  let team_league = league.data.data[0].league.data.id;
+  if(team_league != LEAGUE_ID){
     return false;
   }
   return true;

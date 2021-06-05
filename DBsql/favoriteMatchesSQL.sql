@@ -8,7 +8,7 @@ CREATE TABLE dbo.FavoriteMatches
 (
     FavoriteMatche_id INT IDENTITY(1,1) PRIMARY KEY, -- primary key column
     user_id INT NOT NULL FOREIGN KEY REFERENCES dbo.users(user_id),
-    MatchId INT NOT NULL FOREIGN KEY REFERENCES dbo.matches(MatchId),
+    MatchId INT NOT NULL FOREIGN KEY REFERENCES dbo.matches(Match_Id),
 );
 GO
 

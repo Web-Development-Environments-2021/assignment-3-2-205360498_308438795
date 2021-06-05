@@ -30,7 +30,12 @@ const referee_utils = require("./utils/referee_utils");
  */
  router.post("/addMatch", async (req, res, next) => {
     try {
-      const user_id = req.session.user_id;
+      const match_date = req.body.date;
+      const dateIsGood = await match_utils.dateOfTheMatchIsGood(match_date);
+      if(!dateIsGood){
+        res.status(400).send("The date that given is already gone");
+        return;
+      }
       // need to check if the user is auth to add match to DB
       const match_deatails = req.body;
       // check if teams belong to the league
@@ -49,6 +54,9 @@ const referee_utils = require("./utils/referee_utils");
         res.status(400).send("The id of the referee is not exist");
         return;
       }
+      //
+      // to check if need to make sure that the referee is free in this date
+      //
       await match_utils.addMatchToDB(match_deatails);
       res.status(201).send("The match successfully saved");
     } catch (error) {
@@ -69,14 +77,19 @@ const referee_utils = require("./utils/referee_utils");
         res.status(400).send("The match_id not found in db");
         return;
       }
+      const match_already_past_the_date = await match_utils.matchPastTheDate(match_id);
+      if(!match_already_past_the_date){
+        res.status(400).send("The date of the match was not past and the match was not played");
+        return;
+      }
       const match_deatails = req.body;
       let home_team_goals = match_deatails.home_team_goals;
       let away_team_goals = match_deatails.away_team_goals;
-      if(home_team_goals < 0 || Number.isInteger(home_team_goals)){
+      if(home_team_goals < 0 || !Number.isInteger(home_team_goals)){
         res.status(400).send("The home_team_goals is not valid");
         return;
       }
-      if(away_team_goals < 0 || Number.isInteger(away_team_goals)){
+      if(away_team_goals < 0 || !Number.isInteger(away_team_goals)){
         res.status(400).send("The away_team_goals is not valid");
         return;
       }
