@@ -1,5 +1,6 @@
 const axios = require("axios");
 const api_domain = "https://soccer.sportmonks.com/api/v2.0";
+const league_utils = require("./league_utils");
 // const TEAM_ID = "85";
 
 async function getPlayerIdsByTeam(team_id) {
@@ -59,15 +60,19 @@ async function getplayersByName(name) {
       include: "team,position",
     },
   });
-  players.data.data.forEach(player => {
+
+  players.data.data.forEach(async(player) => {
+    let team_id;
     let team_name;
     let position_id;
     let position_name;
     if(player.team == undefined){
       team_name = null;
+      team_id = null;
     }
     else{
       team_name = player.team.data.name;
+      team_id = player.team.data.id;
     }
     if(player.position == undefined){
       position_id = null;
@@ -77,8 +82,17 @@ async function getplayersByName(name) {
       position_id = player.position.data.id;
       position_name = player.position.data.name;
     }
+    
+    // if(team_id != null){
+    //   let inLeague = await league_utils.teamIsInLeague(team_id);
+    //   if(inLeague){
+    //     players_list.push({"firstname": player.firstname, "lastname": player.lastname,"image_path": player.image_path ,
+    //     "team_name": team_name, "position_num": position_id,"position_name": position_name})  
+    //   }
+    // }
+    
     players_list.push({"firstname": player.firstname, "lastname": player.lastname,"image_path": player.image_path ,
-     "team_name": team_name, "position_num": position_id,"position_name": position_name})  
+    "team_name": team_name, "position_num": position_id,"position_name": position_name})  
   });
   return players_list;
 }

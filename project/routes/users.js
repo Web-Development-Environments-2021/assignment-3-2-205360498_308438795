@@ -35,7 +35,7 @@ router.use("/favorite", favorite);
 router.get("/getAllMatches", async (req, res, next) => {
   try {
     const matches = await match_utils.getAllMatches();
-    res.status(201).send(matches);
+    res.status(200).send(matches);
   } catch (error) {
     next(error);
   }
