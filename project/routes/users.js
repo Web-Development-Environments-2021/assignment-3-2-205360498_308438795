@@ -29,17 +29,6 @@ router.use("/associationMember", association_Member);
 const favorite = require("./favorite");
 router.use("/favorite", favorite);
 
-/**
- * This path gets get All Matches in the DB
- */
-router.get("/getAllMatches", async (req, res, next) => {
-  try {
-    const matches = await match_utils.getAllMatches();
-    res.status(200).send(matches);
-  } catch (error) {
-    next(error);
-  }
-});
 
 // /**
 //  * This path gets body with team_id and save this team in the favorites list of the logged-in user

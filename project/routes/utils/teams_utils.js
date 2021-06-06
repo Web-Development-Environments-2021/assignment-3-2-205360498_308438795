@@ -3,6 +3,7 @@ const api_domain = "https://soccer.sportmonks.com/api/v2.0";
 const LEAGUE_ID = 271;
 const DButils = require("./DButils");
 const events_utils = require("./events_utils");
+const referee_utils = require("./referee_utils");
 
 async function getTeamsByName(name) {
     let teams_list = [];
@@ -27,6 +28,7 @@ async function getPastMatches(team_id){
   for(const match of matches){
     const homeTeam_name = await getTeamNameFromApi(match.HomeTeam_Id);
     const awayTeam_name = await getTeamNameFromApi(match.AwayTeam_Id);
+    const referee_name = await referee_utils.getRefereeName(match.RefereeId);
     const match_events = await events_utils.getAllMatchEvents(match.Match_Id);
     let jason_match = {
       Match_Id:match.Match_Id,
@@ -35,6 +37,8 @@ async function getPastMatches(team_id){
       AwayTeam_Id:match.AwayTeam_Id,
       AwayTeam_name:awayTeam_name,
       MatchDate:match.MatchDate,
+      Referee_id:match.RefereeId,
+      Referee_name:referee_name,
       Stadium_name:match.Stadium_name,
       HomeTeamGoals:match.HomeTeamGoals,
       AwayTeamGoals:match.AwayTeamGoals,
@@ -52,6 +56,7 @@ async function getNextMatches(team_id){
   for(const match of matches){
     const homeTeam_name = await getTeamNameFromApi(match.HomeTeam_Id);
     const awayTeam_name = await getTeamNameFromApi(match.AwayTeam_Id);
+    const referee_name = await referee_utils.getRefereeName(match.RefereeId);
     let jason_match = {
       Match_Id:match.Match_Id,
       HomeTeam_Id:match.HomeTeam_Id,
@@ -59,7 +64,9 @@ async function getNextMatches(team_id){
       AwayTeam_Id:match.AwayTeam_Id,
       AwayTeam_name:awayTeam_name,
       MatchDate:match.MatchDate,
-      Stadium_name:match.Stadium_name,
+      Referee_id:match.RefereeId,
+      Referee_name:referee_name,
+      Stadium_name:match.Stadium_name
     };
     array_of_matches.push(jason_match);
   }
