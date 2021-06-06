@@ -6,6 +6,7 @@ const events_utils = require("./events_utils");
 const referee_utils = require("./referee_utils");
 const match_utils = require("./match_utils");
 
+
 /*
   this function will get teams that have the search name
 */
@@ -26,6 +27,7 @@ async function getTeamsByName(name) {
     return teams_list;
 }
 
+
 /*
   this function will get all team past matches
 */
@@ -39,6 +41,7 @@ async function getPastMatches(team_id){
   }
   return array_of_matches;
 }
+
 
 /*
   this function will get all team future matches
