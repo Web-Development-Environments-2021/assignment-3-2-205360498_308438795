@@ -14,11 +14,19 @@ router.get("/teamFullDetails/:teamId", async (req, res, next) => {
     res.status(400).send("The id of the Team is not from our league!");
       return;
     }
-    const team_name = await teams_utils.getTeamNameFromApi(team_id);
+    // const team_name = await teams_utils.getTeamNameFromApi(team_id);
+    const team = await teams_utils.getTeamNameAndImgFromApi(team_id);
+    let team_name = team.name;
+    let team_img = team.img_url;
+    let teamPrev = {
+      Team_Id:team_id,
+      Team_name:team_name,
+      Team_img:team_img
+    };
     const team_players = await players_utils.getPlayersByTeam(team_id);
     const team_matches = await teams_utils.getAllMatches(team_id);
     const return_json = {
-      Team_name:team_name,
+      TeamPrev:teamPrev,
       Team_players:team_players,
       Team_matches:team_matches
     };

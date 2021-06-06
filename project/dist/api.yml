@@ -103,12 +103,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/MatchDetails"
+              $ref: "#/components/schemas/addMatchSchema"
       responses:
         "201":
           description: new match has been added
         '400':
-          description: The date that given is already gone
+          description: worng parameters
         "403":
           description: only association Member can use this function
 
@@ -130,7 +130,7 @@ paths:
         "200":
           description: The match update successfully
         '400':
-          description: The date of the match was not past and the match was not played
+          description: worng parameters
         "403":
           description: only association Member can use this function          
     
@@ -148,7 +148,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RefereeScheme"             
+              $ref: "#/components/schemas/RefereeAddScheme"             
       responses:
         "200":
           description: Referee Already in DB
@@ -176,7 +176,7 @@ paths:
         "201":
           description: the event calender was added successfully
         "400":
-          description: The match_id not found in db
+          description: worng parameters
         "403":
           description: only association Member can use this function                 
 
@@ -197,7 +197,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/MatchDetails"
+                  $ref: "#/components/schemas/MatchPrev"
         '204':
           description: there is no favorite matches
         '401':
@@ -282,7 +282,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Team"
+                  $ref: "#/components/schemas/TeamPrev"
         '204':
           description: the search didn't find results
 
@@ -334,7 +334,29 @@ paths:
 
 components:
   schemas:
-
+    addMatchSchema:
+      type: object
+      properties:
+        date:
+          type: string
+          description: dateTime of the Match
+          example: "2021-06-09T15:55:43.1700000Z"
+        home_team_id:
+          type: integer
+          description: home team id number
+          example: 1020
+        away_team_id:
+          type: integer
+          description: away team id number
+          example: 939
+        referee_id:
+          type: integer
+          description: referee id in db
+          example: 1
+        stadium:
+          type: string
+          description: name of the stadium
+          example: san-siro
     User:
       type: object
       properties:
@@ -431,17 +453,13 @@ components:
         nextGameDetails:
           $ref: '#/components/schemas/MatchDetails'
 
-
-    MatchDetails:
+    MatchPrev:
       type: object
-      required:
-        - Date
-        - Hour
-        - HomeTeam
-        - AwayTeam
-        - Referee
-        - Staduim
       properties:
+        Match_Id:
+          type: integer
+          description: the id of the match in db
+          example: 1
         Date:
           type: string
           format: date
@@ -452,29 +470,84 @@ components:
           format: hour
           description: the time of the game 
           example: "16:00"
-        HomeTeam:
-          $ref: '#/components/schemas/Team'
-        AwayTeam:
-          $ref: '#/components/schemas/Team'
-        Referee_id:
+        HomeTeamPrev:
+          $ref: '#/components/schemas/TeamPrev'
+        AwayTeamPrev:
+          $ref: '#/components/schemas/TeamPrev'
+        Stadium:
+          type: string
+          description: the name of the stadium
+          example: cump now
+        RefereeID:
           type: integer
-          description: referee id
-          example: "2"  
-        Referee:
-          $ref: '#/components/schemas/Team'   
+          description: the id of the referee in db
+          example: 2
+        Referee_name:
+          type: string
+          description: the name of the referee
+          example: tomer varon
+
+    TeamPrev:
+      type: object
+      properties:
+        Team_Id:
+          type: integer
+          description: the id of the home team
+          example: 1020
+        Team_name:
+          type: string
+          description: the name of the home team
+          example: arsenal
+        Team_img:
+          type: string
+          format: url
+          description: the img of the away team 
+          example: "https://cdn.sportmonks.com/images//soccer/teams/21/85.png"
+
+    MatchDetails:
+      type: object
+      required:
+        - Match_Id
+        - Date
+        - Hour
+        - HomeTeamPrev
+        - AwayTeamPrev
+        - Staduim
+        - Referee
+      properties:
+        Match_Id:
+          type: integer
+          description: the id of the match in db
+          example: 1020
+        Date:
+          type: string
+          format: date
+          description: the date of the game
+          example: "31/05/2012"
+        Hour:
+          type: string
+          format: hour
+          description: the time of the game 
+          example: "16:00"
+        HomeTeamPrev:
+          $ref: '#/components/schemas/TeamPrev'
+        AwayTeamPrev:
+          $ref: '#/components/schemas/TeamPrev'
         Staduim:
           type: string
           description: Staduim's name
           example: "Tedi"
+        Referee:
+          $ref: '#/components/schemas/Referee'   
+
 
 
     Match:
       type: object
       required:
         - MatchDetails
-        - HomeGoals
-        - AwayGoals
-        - Referee
+        - HomeTeamGoals
+        - AwayTeamGoals
         - EventCalender
       properties:
         MatchDetails:
@@ -486,10 +559,6 @@ components:
         AwayGoals:
           type: integer
           description: the number of goals that Away team score
-          example: 4
-        Referee:
-          type: integer
-          description: referee id 
           example: 4
         EventCalender:
           $ref: '#/components/schemas/EventCalender'          
@@ -514,33 +583,33 @@ components:
     MatchEvent:
       type: object
       required:
-        - Date
-        - Hour
-        - TimeInMatch
-        - EventDescription
+        - event_date
+        - event_time
+        - minute
+        - game_event
       properties:
-        Date:
+        event_date:
           type: string
           format: date
           description: the date of the game
           example: "31/05/2012"
-        Hour:
+        event_time:
           type: string
           format: hour
           description: the time of the game 
           example: "16:00"
-        TimeInMatch:
+        minute:
           type: integer
           description: the time in the game 
           example: 65
-        EventDescription:
+        game_event:
           type: string
           description: >
             Event description from the next list
             "GOAL","OFFSIDE","FOUL","RED_CARD","YELLOW_CARD","INJURY","SUB".
           example: "GOAL"
 
-    RefereeScheme:
+    RefereeAddScheme:
       type: object
       properties:
         first_name:
@@ -552,6 +621,18 @@ components:
           description: last name contains letters only
           example: ohayon
 
+    Referee:
+      type: object
+      properties:
+        RefereeID:
+          type: integer
+          description: the id of the referee in db
+          example: 1
+        Full_name:
+          type: string
+          description: Full name conatins letters only
+          example: matan ohayon
+
     StageMatchesArray:
       type: object
       required:
@@ -561,11 +642,11 @@ components:
         PreMatches:
           type: array
           items:
-            $ref: '#/components/schemas/MatchDetails'
+            $ref: '#/components/schemas/Match'
         FutureMatches:
           type: array
           items:
-            $ref: '#/components/schemas/Match'
+            $ref: '#/components/schemas/MatchDetails'
 
 
 
@@ -614,17 +695,22 @@ components:
     Team:
       type: object
       properties:
-        name:
-          type: string
-          description: team name
-          example: København
-        image_url:
-          type: string
-          format: url
-          description: Team's url for the logo team
-          example: "https://mir-s3-cdn-cf.behance.net/project_modules/disp/f6f6ff17697607.562d457a4296.png" 
-        players:
+        TeamPrev:
+          $ref: "#/components/schemas/TeamPrev"
+        Team_players:
           type: array
           items:
             type: object
             $ref: "#/components/schemas/PlayerPreview"
+        Team_matches:
+          type: array
+          items:
+            past_matches:
+              type: object
+              $ref: "#/components/schemas/Match"
+            next_matches:
+              type: object
+              $ref: "#/components/schemas/MatchDetails"
+
+
+

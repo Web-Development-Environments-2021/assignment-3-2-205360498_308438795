@@ -9,8 +9,23 @@ const axios = require("axios");
 
 
 async function createMatchPrev(Game){
-  homeTeamName = await teams_utils.getTeamNameFromApi(Game.HomeTeam_Id);
-  awayTeamName = await teams_utils.getTeamNameFromApi(Game.AwayTeam_Id);
+  // homeTeamName = await teams_utils.getTeamNameFromApi(Game.HomeTeam_Id);
+  // awayTeamName = await teams_utils.getTeamNameFromApi(Game.AwayTeam_Id);
+  const homeTeam = await teams_utils.getTeamNameAndImgFromApi(Game.HomeTeam_Id);
+  const awayTeam = await teams_utils.getTeamNameAndImgFromApi(Game.AwayTeam_Id);
+  let homeTeamName = homeTeam.name;
+  let awayTeamName = awayTeam.name;
+  let homeTeamImg = homeTeam.img_url;
+  let awayTeamImg = awayTeam.img_url;
+  let homeTeamPrev = {Team_Id:Game.HomeTeam_Id,
+    Team_name:homeTeamName,
+    Team_img:homeTeamImg
+  };
+  let awayTeamPrev = {Team_Id:Game.AwayTeam_Id,
+    Team_name:awayTeamName,
+    Team_img:awayTeamImg
+  };
+
   stadium = Game.Stadium_name;
   gamehour = await geTimeFromDateTime(Game.MatchDate);
   gamedate = await getDateFromDateTime(Game.MatchDate);
@@ -19,14 +34,19 @@ async function createMatchPrev(Game){
     Match_Id:Game.Match_Id,
     Date:gamedate,
     Hour:gamehour,
-    HomeTeam_Id:Game.HomeTeam_Id,
-    HomeTeam_name:homeTeamName,
-    AwayTeam_Id:Game.AwayTeam_Id,
-    AwayTeam_name:awayTeamName,
+    HomeTeamPrev:homeTeamPrev,
+    AwayTeamPrev:awayTeamPrev,
     Stadium:stadium,
     RefereeID:Game.RefereeID,
-    Referee:referee_name
+    Referee_name:referee_name
   };
+}
+async function createMatch(match){
+  const events = await events_utils.getAllMatchEvents(match.Match_Id);
+  let CurMatch = await createMatchPrev(match);
+  CurMatch["HomeTeamGoals"] = match.HomeTeamGoals;
+  CurMatch["AwayTeamGoals"] = match.AwayTeamGoals;
+  CurMatch["EventCalender"] = events;
 }
 
 // get all stage matches 
@@ -40,11 +60,12 @@ async function getCurrentStageMatches(){
   // need to get at least 3 events in past matches
   for(let i =0;i<pastMatches.length;i++){
     // get events for each game in db
-    let events = await events_utils.getAllMatchEvents(pastMatches[i].Match_Id);
-    let CurMatch = createMatchPrev(pastMatches[i])
-    CurMatch["HomeGoals"] = pastMatches[i].HomeTeamGoals;
-    CurMatch["HomeGoals"] = pastMatches[i].AwayTeamGoals;
-    CurMatch["EventCalender"] = events;
+    // let events = await events_utils.getAllMatchEvents(pastMatches[i].Match_Id);
+    // let CurMatch = createMatchPrev(pastMatches[i])
+    // CurMatch["HomeGoals"] = pastMatches[i].HomeTeamGoals;
+    // CurMatch["HomeGoals"] = pastMatches[i].AwayTeamGoals;
+    // CurMatch["EventCalender"] = events;
+    const CurMatch = await createMatch(pastMatches[i]);
     resPastMatches.push(CurMatch);
   }
 
@@ -207,3 +228,5 @@ exports.checkiFMatchExist = checkiFMatchExist;
 exports.getCurrentStageMatches  = getCurrentStageMatches;
 exports.dateOfTheMatchIsGood = dateOfTheMatchIsGood;
 exports.matchPastTheDate = matchPastTheDate;
+exports.createMatchPrev = createMatchPrev;
+exports.createMatch = createMatch;
