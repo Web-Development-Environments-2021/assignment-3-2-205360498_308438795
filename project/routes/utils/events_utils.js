@@ -2,7 +2,9 @@ const DButils = require("./DButils");
 const axios = require("axios");
 
 
-
+/*
+this function will add an Event to a match
+*/
 async function addEventToMatch(match_id,event){
     let date = event.event_date;
     let time = event.event_time;
@@ -13,10 +15,15 @@ async function addEventToMatch(match_id,event){
         values ('${date}', '${time}','${minute}','${game_event}','${match_id}')`
     );
 }
+
+/*
+this function will get the eventCalender of a match that given
+*/
 async function getAllMatchEvents(match_id){
     const eventCalender = [];
     const events = await DButils.execQuery(`SELECT * FROM dbo.Events where MatchId='${match_id}'`);
     for(const event of events){
+        // turn all event to json
         let event_json = {
             event_date:event.event_date,
             event_time:event.event_time,
