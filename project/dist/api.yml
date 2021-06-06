@@ -88,26 +88,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/League"
-
-
-                  
-
-  /users/getAllMatches:
-    get:
-      tags:
-        - User
-        - Matches
-      summary: all matches in DB
-      description: sent to client all matches in DB
-      responses:
-        "200":
-          description: the matches send successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/MatchDetails"
                   
                   
   /users/associationMember/addMatch:
@@ -118,6 +98,12 @@ paths:
         - Matches
       summary: AssociationMember add match to DB
       description:   AssociationMember add match to DB , future match
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MatchDetails"
       responses:
         "201":
           description: new match has been added
@@ -132,7 +118,7 @@ paths:
         - User
         - AssociationMember
         - Matches
-      summary: AssociationMember add match to DB
+      summary: AssociationMember update match in DB
       description:   AssociationMember add match to DB , future match
       requestBody:
         required: true
@@ -156,7 +142,13 @@ paths:
         - AssociationMember
         - Matches
       summary: AssociationMember add referee to DB
-      description:   AssociationMember add referee to DB       
+      description:   AssociationMember add referee to DB
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefereeScheme"             
       responses:
         "200":
           description: Referee Already in DB
@@ -388,6 +380,10 @@ components:
     UpdateMatchScheme:
       type: object
       properties:
+        match_id:
+          type: integer
+          description: id of match in DB
+          example: 2
         home_team_goals:
           type: integer
           description: goals that home team scored
@@ -407,14 +403,14 @@ components:
           minLength: 3
           maxLength: 8
           description: username conatins letters only
-          example: naorbe
+          example: tomervar
         password:
           type: string
           minLength: 5
           maxLength: 10
           format: password
           description: password conatins at least one number and one special char
-          example: naor@55
+          example: tomer@1234
 
 
     League:
@@ -443,6 +439,7 @@ components:
         - Hour
         - HomeTeam
         - AwayTeam
+        - Referee
         - Staduim
       properties:
         Date:
@@ -459,6 +456,12 @@ components:
           $ref: '#/components/schemas/Team'
         AwayTeam:
           $ref: '#/components/schemas/Team'
+        Referee_id:
+          type: integer
+          description: referee id
+          example: "2"  
+        Referee:
+          $ref: '#/components/schemas/Team'   
         Staduim:
           type: string
           description: Staduim's name
@@ -494,9 +497,19 @@ components:
 
 
     EventCalender:
-      type: array
-      items:
-        $ref: '#/components/schemas/MatchEvent'
+      type: object
+      required:
+        - match_id
+        - events
+      properties:
+        match_id:
+          type: integer
+          description: match id
+          example: 3
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/MatchEvent'
 
     MatchEvent:
       type: object
@@ -526,6 +539,18 @@ components:
             Event description from the next list
             "GOAL","OFFSIDE","FOUL","RED_CARD","YELLOW_CARD","INJURY","SUB".
           example: "GOAL"
+
+    RefereeScheme:
+      type: object
+      properties:
+        first_name:
+          type: string
+          description: first name conatins letters only
+          example: matan
+        last_name:
+          type: string
+          description: last name contains letters only
+          example: ohayon
 
     StageMatchesArray:
       type: object
