@@ -393,7 +393,7 @@ components:
           type: string
           description: user's email
           example: ladygaga@gmail.com
-        image-url:
+        image_url:
           pattern: URL
           type: string
           description: URL for the user's image
@@ -576,7 +576,7 @@ components:
           type: integer
           description: match id
           example: 3
-        events:
+        eventCalender:
           type: array
           items:
             $ref: '#/components/schemas/MatchEvent'

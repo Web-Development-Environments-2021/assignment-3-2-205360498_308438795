@@ -23,7 +23,7 @@ async function getTeamsByName(name) {
   }
 
 async function getPastMatches(team_id){
-  const array_of_matches = [];
+  let array_of_matches = [];
   const matches = await DButils.execQuery(`SELECT * FROM dbo.matches 
   WHERE Played = 1 AND (HomeTeam_Id = '${team_id}' OR AwayTeam_Id ='${team_id}')`);
   for(const match of matches){
@@ -50,14 +50,14 @@ async function getPastMatches(team_id){
     // jason_match["HomeTeamGoals"] = match.HomeTeamGoals;
     // jason_match["AwayTeamGoals"] = match.AwayTeamGoals;
     // jason_match["EventCalender"] = match_events;
-    const jason_match = await match_utils.createMatch(match);
+    let jason_match = await match_utils.createMatch(match);
     array_of_matches.push(jason_match);
   }
   return array_of_matches;
 }
 
 async function getNextMatches(team_id){
-  const array_of_matches = [];
+  let array_of_matches = [];
   const matches = await DButils.execQuery(`SELECT * FROM dbo.matches 
   WHERE Played = 0 AND (HomeTeam_Id = '${team_id}' OR AwayTeam_Id ='${team_id}')`);
   for(const match of matches){
@@ -82,8 +82,8 @@ async function getNextMatches(team_id){
 }
 
 async function getAllMatches(team_id){
-    const past_matches_array = [];
-    const next_matches_array = [];
+    let past_matches_array = [];
+    let next_matches_array = [];
     past_matches_array = await getPastMatches(team_id);
     next_matches_array = await getNextMatches(team_id);
     return {past_matches:past_matches_array,
