@@ -15,10 +15,8 @@ async function addRefereeToDB(first_name,last_name){
       checkIfExist.map((element) => match_id_array.push(element)); //extracting the match id into array for checking if exist
     if(match_id_array.length==0){
         return false;
-      
     }
     return true;
-    
   }
 
   async function checkIfRefereeExist(referee_id){
@@ -29,7 +27,6 @@ async function addRefereeToDB(first_name,last_name){
       checkIfExist.map((element) => match_id_array.push(element)); //extracting the match id into array for checking if exist
     if(match_id_array.length==0){
         return false;
-      
     }
     return true;
   }

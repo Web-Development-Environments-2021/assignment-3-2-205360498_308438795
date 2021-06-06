@@ -1,12 +1,14 @@
 
 const DButils = require("./DButils");
 const favoriteMatches_utils = require("./favoriteMatches_utils");
+const events_utils = require("./events_utils");
 const axios = require("axios");
 
 
+
 async function createMatchPrev(Game){
-  homeTeamName = await getTeamNameFromApi(Game.HomeTeamId);
-  awayTeamName = await getTeamNameFromApi(Game.AwayTeamId);
+  homeTeamName = await getTeamNameFromApi(Game.HomeTeam_Id);
+  awayTeamName = await getTeamNameFromApi(Game.AwayTeam_Id);
   stadium = Game.Stadium_name;
   gamehour = await geTimeFromDateTime(Game.MatchDate);
   gamedate = await getDateFromDateTime(Game.MatchDate);
@@ -25,6 +27,7 @@ async function createMatchPrev(Game){
 
 // get all stage matches 
 async function getCurrentStageMatches(){
+  await updatePlayedMatchesInDB();
   let futureMatches = await DButils.execQuery(`SELECT HomeTeam_Id , AwayTeam_Id , MatchDate , Stadium_name form dbo.matches WHERE Played = 0`)
   let pastMatches = await DButils.execQuery(`SELECT * form dbo.matches WHERE Played = 1`)
   let resFutureMatches = []
@@ -57,12 +60,10 @@ async function getCurrentStageMatches(){
   for(i;i<futureMatches.length;i++){
     resFutureMatches.push(createMatchPrev(futureMatches[i]));
   }
-
   return{
     PreMatches:resPastMatches,
     FutureMatches:resFutureMatches
   }
-
 }
 
 async function changePlayedTo1(match_id){
@@ -187,7 +188,6 @@ async function updateMatchInDB(match_deatails) {
     let match_id = match_deatails.match_id;
     let home_team_goals = match_deatails.home_team_goals;
     let away_team_goals = match_deatails.away_team_goals;
-    let played = 1;
     await DButils.execQuery(
         `UPDATE dbo.matches
         SET HomeTeamGoals=${home_team_goals}, AwayTeamGoals=${away_team_goals}, Played=1
@@ -197,17 +197,10 @@ async function updateMatchInDB(match_deatails) {
 
 
 // need to check
-async function updateEventCalenderToMatch(match_deatails) {
-    let match_id = match_deatails.match_id;
-    let event_array = match_deatails.event_array;
-    let played = 1;
-    await DButils.execQuery(
-        `update dbo.matches
-        set (HomeTeamGoals, AwayTeamGoals, Played) 
-        values ('${home_team_goals}', '${away_team_goals}','${played}')
-        where MatchId='${match_id}' `
-      );
-    console.log(match_deatails);
+async function updateEventCalenderToMatch(match_id,eventCalender) {
+  for(const event of eventCalender){
+    await events_utils.addEventToMatch(match_id,event);
+  }
 }
 
 

@@ -101,6 +101,29 @@ const referee_utils = require("./utils/referee_utils");
     }
   });
 
+
+  router.post("/addEventCalender", async (req, res, next) => {
+    try {
+      const match_id = req.body.match_id;
+      // need to check if the match exsist in db
+      const match_in_db = await match_utils.checkiFMatchExist(match_id);
+      if(!match_in_db){
+        res.status(400).send("The match_id not found in db");
+        return;
+      }
+      const match_already_past_the_date = await match_utils.matchPastTheDate(match_id);
+      if(!match_already_past_the_date){
+        res.status(400).send("The date of the match was not past and the match was not played");
+        return;
+      }
+      const eventCalender = req.body.eventCalender;
+      await match_utils.updateEventCalenderToMatch(match_id,eventCalender);
+      res.status(201).send("the event calender was added successfully");
+    } catch (error) {
+      next(error);
+    }
+  });
+
 /**
  * This path gets body with match deatails and save this match in the DB
  */
