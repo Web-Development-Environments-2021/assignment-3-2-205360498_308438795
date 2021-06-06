@@ -32,11 +32,15 @@ async function addRefereeToDB(first_name,last_name){
   }
 
   async function getRefereeName(referee_id){
-    let referee = await DButils.execQuery(`SELECT TOP 1 1 FROM dbo.Referees where referee_id='${referee_id}'`);
+    let referee = await DButils.execQuery(`SELECT * FROM dbo.Referees where referee_id='${referee_id}'`);
     let referee_array = [];
     referee.map((element) => referee_array.push(element));
     let full_name = referee_array[0].first_name + " " + referee_array[0].last_name;
-    return full_name;
+    let ref_return = {
+      RefereeID:referee_id,
+      Full_name:full_name
+    }
+    return ref_return;
   }
 
 exports.getRefereeName = getRefereeName;

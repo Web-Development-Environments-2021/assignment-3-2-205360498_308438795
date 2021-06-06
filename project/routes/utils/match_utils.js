@@ -29,7 +29,7 @@ async function createMatchPrev(Game){
   stadium = Game.Stadium_name;
   gamehour = await geTimeFromDateTime(Game.MatchDate);
   gamedate = await getDateFromDateTime(Game.MatchDate);
-  referee_name = await referee_utils.getRefereeName(Game.RefereeID);
+  referee = await referee_utils.getRefereeName(Game.RefereeID);
   return{
     Match_Id:Game.Match_Id,
     Date:gamedate,
@@ -37,23 +37,26 @@ async function createMatchPrev(Game){
     HomeTeamPrev:homeTeamPrev,
     AwayTeamPrev:awayTeamPrev,
     Stadium:stadium,
-    RefereeID:Game.RefereeID,
-    Referee_name:referee_name
+    Referee:referee
   };
 }
 async function createMatch(match){
   const events = await events_utils.getAllMatchEvents(match.Match_Id);
   let CurMatch = await createMatchPrev(match);
-  CurMatch["HomeTeamGoals"] = match.HomeTeamGoals;
-  CurMatch["AwayTeamGoals"] = match.AwayTeamGoals;
-  CurMatch["EventCalender"] = events;
+  let return_match = {
+    MatchDetails:CurMatch,
+    HomeTeamGoals:match.HomeTeamGoals,
+    AwayTeamGoals:match.AwayTeamGoals,
+    EventCalender:events
+  };
+  return return_match;
 }
 
 // get all stage matches 
 async function getCurrentStageMatches(){
   await updatePlayedMatchesInDB();
-  let futureMatches = await DButils.execQuery(`SELECT HomeTeam_Id , AwayTeam_Id , MatchDate , Stadium_name form dbo.matches WHERE Played = 0`);
-  let pastMatches = await DButils.execQuery(`SELECT * form dbo.matches WHERE Played = 1`);
+  let futureMatches = await DButils.execQuery(`SELECT * FROM dbo.matches WHERE Played = 0`);
+  let pastMatches = await DButils.execQuery(`SELECT * FROM dbo.matches WHERE Played = 1`);
   let resFutureMatches = [];
   let resPastMatches = [];
   
@@ -72,7 +75,7 @@ async function getCurrentStageMatches(){
   // future matches should represent as MatchPrev
   let i =0;
   for(i;i<futureMatches.length;i++){
-    resFutureMatches.push(createMatchPrev(futureMatches[i]));
+    resFutureMatches.push(await createMatchPrev(futureMatches[i]));
   }
   return{
     PreMatches:resPastMatches,
@@ -166,11 +169,11 @@ async function getMatchesInfo(matches_ids_list) {
 
 
 async function addMatchToDB(match_deatails) {
-    let home_team = match_deatails.home_team;
-    let away_team = match_deatails.away_team;
-    let date = match_deatails.date;
+    let home_team = match_deatails.home_team_id;
+    let away_team = match_deatails.away_team_id;
+    let date = new Date(match_deatails.date).toISOString();
     let stadium = match_deatails.stadium;
-    let referee = match_deatails.referee;
+    let referee = match_deatails.referee_id;
     let played = 0;
     await DButils.execQuery(
         `insert into dbo.matches (HomeTeam_Id, AwayTeam_Id, MatchDate, Stadium_name, RefereeID, Played) 

@@ -4,6 +4,7 @@ const DButils = require("./utils/DButils");
 const match_utils = require("./utils/match_utils")
 const league_utils = require("./utils/league_utils");
 const referee_utils = require("./utils/referee_utils");
+const favoriteMatches_utils = require("./utils/favoriteMatches_utils");
 
 /**
  * Authenticate for associationMember requests by middleware
@@ -94,7 +95,7 @@ const referee_utils = require("./utils/referee_utils");
         return;
       }
       await match_utils.updateMatchInDB(match_deatails);
-      await match_utils.removeMatchFromFavorite(match_id);
+      await favoriteMatches_utils.removeMatchFromFavorite(match_id);
       res.status(200).send("The match update successfully");
     } catch (error) {
       next(error);

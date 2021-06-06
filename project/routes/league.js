@@ -13,7 +13,7 @@ router.get("/getDetails", async (req, res, next) => {
 
 // get all stage matches
 
-router.get("/getSatgeMatches", async (req, res, next) => {
+router.get("/getStageMatches", async (req, res, next) => {
   try {
     const league_matches = await league_utils.getStageMatches();
     res.status(200).send(league_matches);
