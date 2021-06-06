@@ -340,7 +340,7 @@ components:
         date:
           type: string
           description: dateTime of the Match
-          example: "2021-06-09T15:55:43.1700000Z"
+          example: "2021-06-09T15:55:43.170Z"
         home_team_id:
           type: integer
           description: home team id number
@@ -357,6 +357,7 @@ components:
           type: string
           description: name of the stadium
           example: san-siro
+
     User:
       type: object
       properties:

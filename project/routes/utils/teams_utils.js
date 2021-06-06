@@ -115,7 +115,7 @@ async function getTeamNameAndImgFromApi(teamId){
       })
 
   return {name:team.data.data.name,
-          img_url:team.data.date.logo_path
+          img_url:team.data.data.logo_path
   };   
 }
 
