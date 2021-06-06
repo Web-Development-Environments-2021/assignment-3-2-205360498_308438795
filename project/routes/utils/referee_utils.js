@@ -1,14 +1,18 @@
 const DButils = require("./DButils");
-
+    /**
+ * this void function add ref to DB
+ */
 async function addRefereeToDB(first_name,last_name){
     await DButils.execQuery(
         `insert into dbo.Referees (first_name, last_name) 
         values ('${first_name}', '${last_name}')`
       );
   }
-
+    /**
+ * this bool function returns true if referee with same name in DB or false if dont exist
+ */
   async function checkIfRefereeExistWithSameName(ref_first_name,ref_last_name){
-    // TODO - check if match exist in matches db.
+    //  check if match exist in matches db.
     let checkIfExist = await DButils.execQuery(`SELECT TOP 1 1 FROM dbo.Referees 
                 WHERE (first_name = '${ref_first_name}') AND (last_name = '${ref_last_name}')`);
     let match_id_array = [];
@@ -18,7 +22,9 @@ async function addRefereeToDB(first_name,last_name){
     }
     return true;
   }
-
+    /**
+ * this bool function returns true if referee in DB or false if dont exist
+ */
   async function checkIfRefereeExist(referee_id){
     // TODO - check if match exist in matches db.
     let checkIfExist = await DButils.execQuery(`SELECT TOP 1 1 FROM dbo.Referees 
@@ -30,7 +36,9 @@ async function addRefereeToDB(first_name,last_name){
     }
     return true;
   }
-
+    /**
+ * this function returns referee name for specific referee_id
+ */
   async function getRefereeName(referee_id){
     let referee = await DButils.execQuery(`SELECT * FROM dbo.Referees where referee_id='${referee_id}'`);
     let referee_array = [];

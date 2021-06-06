@@ -5,6 +5,9 @@ const players_utils = require("./utils/players_utils");
 const teams_utils = require("./utils/teams_utils");
 const league_utils = require("./utils/league_utils");
 
+/**
+ * this path used for get all team details by ID ( Superliga teams only!)
+ */
 router.get("/teamFullDetails/:teamId", async (req, res, next) => {
   let team_details = [];
   let team_id = req.params.teamId;

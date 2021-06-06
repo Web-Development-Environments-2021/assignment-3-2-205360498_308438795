@@ -6,6 +6,8 @@ const events_utils = require("./events_utils");
 const referee_utils = require("./referee_utils");
 const match_utils = require("./match_utils");
 
+
+
 async function getTeamsByName(name) {
     let teams_list = [];
     const teams = await axios.get(`${api_domain}/teams/search/${name}`, {
@@ -22,39 +24,18 @@ async function getTeamsByName(name) {
     return teams_list;
   }
 
+
 async function getPastMatches(team_id){
   let array_of_matches = [];
   const matches = await DButils.execQuery(`SELECT * FROM dbo.matches 
   WHERE Played = 1 AND (HomeTeam_Id = '${team_id}' OR AwayTeam_Id ='${team_id}')`);
   for(const match of matches){
-    // const homeTeam_name = await getTeamNameFromApi(match.HomeTeam_Id);
-    // const awayTeam_name = await getTeamNameFromApi(match.AwayTeam_Id);
-    // const referee_name = await referee_utils.getRefereeName(match.RefereeId);
-    // const match_events = await events_utils.getAllMatchEvents(match.Match_Id);
-    // let jason_match = {
-    //   Match_Id:match.Match_Id,
-    //   HomeTeam_Id:match.HomeTeam_Id,
-    //   HomeTeam_name:homeTeam_name,
-    //   AwayTeam_Id:match.AwayTeam_Id,
-    //   AwayTeam_name:awayTeam_name,
-    //   MatchDate:match.MatchDate,
-    //   Referee_id:match.RefereeId,
-    //   Referee_name:referee_name,
-    //   Stadium_name:match.Stadium_name,
-    //   HomeTeamGoals:match.HomeTeamGoals,
-    //   AwayTeamGoals:match.AwayTeamGoals,
-    //   EventCalender:match_events
-    // };
-    // const match_events = await events_utils.getAllMatchEvents(match.Match_Id);
-    // const jason_match = await match_utils.createMatchPrev(match);
-    // jason_match["HomeTeamGoals"] = match.HomeTeamGoals;
-    // jason_match["AwayTeamGoals"] = match.AwayTeamGoals;
-    // jason_match["EventCalender"] = match_events;
     let jason_match = await match_utils.createMatch(match);
     array_of_matches.push(jason_match);
   }
   return array_of_matches;
 }
+
 
 async function getNextMatches(team_id){
   let array_of_matches = [];
