@@ -39,17 +39,17 @@ const referee_utils = require("./utils/referee_utils");
       // need to check if the user is auth to add match to DB
       const match_deatails = req.body;
       // check if teams belong to the league
-      const homeTeamFromCurrLeague = await league_utils.teamIsInLeague(match_deatails.home_team);
+      const homeTeamFromCurrLeague = await league_utils.teamIsInLeague(match_deatails.home_team_id);
       if(!homeTeamFromCurrLeague){
         res.status(400).send("The id of the home Team is not from our league!");
         return;
       }
-      const awayTeamFromCurrLeague = await league_utils.teamIsInLeague(match_deatails.away_team);
+      const awayTeamFromCurrLeague = await league_utils.teamIsInLeague(match_deatails.away_team_id);
       if(!awayTeamFromCurrLeague){
         res.status(400).send("The id of the away Team is not from our league!");
         return;
       }
-      const refereeExist = await referee_utils.checkIfRefereeExist(match_deatails.referee);
+      const refereeExist = await referee_utils.checkIfRefereeExist(match_deatails.referee_id);
       if(!refereeExist){
         res.status(400).send("The id of the referee is not exist");
         return;
