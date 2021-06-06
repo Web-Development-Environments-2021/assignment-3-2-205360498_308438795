@@ -123,10 +123,6 @@ paths:
           description: new match has been added
         '400':
           description: The date that given is already gone
-        '400':
-          description: The id of one of the Teams is not from our league! 
-        "400":
-          description: The id of the referee is not exist
         "403":
           description: only association Member can use this function
 
@@ -138,20 +134,17 @@ paths:
         - Matches
       summary: AssociationMember add match to DB
       description:   AssociationMember add match to DB , future match
-      required: true
+      requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateMatchScheme"      
+              $ref: "#/components/schemas/UpdateMatchScheme"
       responses:
         "200":
           description: The match update successfully
         '400':
           description: The date of the match was not past and the match was not played
-        '400':
-          description: The home_team_goals is not valid
-        "400":
-          description: The away_team_goals is not valid
         "403":
           description: only association Member can use this function          
     
@@ -180,8 +173,9 @@ paths:
         - AssociationMember
         - Matches 
       summary: AssociationMember add eventCalender to match
-      description:   AssociationMember add array of events to match in DB  
-      required: true
+      description:   AssociationMember add array of events to match in DB
+      requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -191,8 +185,6 @@ paths:
           description: the event calender was added successfully
         "400":
           description: The match_id not found in db
-        "400":
-          description: The date of the match still not played  
         "403":
           description: only association Member can use this function                 
 
@@ -245,8 +237,6 @@ paths:
           description: match already in your favorite list  
         '400':
           description: worng input parameters
-        '400':
-          description: the match is already played and cant be added to favorite         
         '401':
           description: the user must be login to the system
 
@@ -335,30 +325,12 @@ paths:
 
 
   /league/getStageMatches:
-
-
-  /league/getStageMatches:
     get:
       tags:
         - Matches
         - League
       summary: show all the stage matches
       description: sent to the client 2 list of games, one is prev games and the other is futher games of this stage
-      parameters:
-        - name: Season
-          in: path
-          description: string of the season
-          required: true
-          schema:
-            type: string
-            example: "2016/17"
-        - name: StageNum
-          in: path
-          description: the round number
-          required: true
-          schema:
-            type: integer
-            example: 38
       responses:
         '200':
           description: data about StageMatches
@@ -417,11 +389,11 @@ components:
       type: object
       properties:
         home_team_goals:
-          type: int
+          type: integer
           description: goals that home team scored
           example: 0
         away_team_goals:
-          type: int
+          type: integer
           description: goals that awat team scored
           example: 2  
 
