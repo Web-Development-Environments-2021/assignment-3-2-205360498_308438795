@@ -2,17 +2,19 @@
 const DButils = require("./DButils");
 const favoriteMatches_utils = require("./favoriteMatches_utils");
 const events_utils = require("./events_utils");
+const teams_utils = require("./teams_utils");
+const referee_utils = require("./referee_utils");
 const axios = require("axios");
 
 
 
 async function createMatchPrev(Game){
-  homeTeamName = await getTeamNameFromApi(Game.HomeTeam_Id);
-  awayTeamName = await getTeamNameFromApi(Game.AwayTeam_Id);
+  homeTeamName = await teams_utils.getTeamNameFromApi(Game.HomeTeam_Id);
+  awayTeamName = await teams_utils.getTeamNameFromApi(Game.AwayTeam_Id);
   stadium = Game.Stadium_name;
   gamehour = await geTimeFromDateTime(Game.MatchDate);
   gamedate = await getDateFromDateTime(Game.MatchDate);
-  referee_name = await getRefereeName(Game.RefereeID);
+  referee_name = await referee_utils.getRefereeName(Game.RefereeID);
   return{
     Date:gamedate,
     Hour:gamehour,
@@ -23,35 +25,22 @@ async function createMatchPrev(Game){
   }
 }
 
-
-
 // get all stage matches 
 async function getCurrentStageMatches(){
   await updatePlayedMatchesInDB();
-  let futureMatches = await DButils.execQuery(`SELECT HomeTeam_Id , AwayTeam_Id , MatchDate , Stadium_name form dbo.matches WHERE Played = 0`)
-  let pastMatches = await DButils.execQuery(`SELECT * form dbo.matches WHERE Played = 1`)
-  let resFutureMatches = []
-  let resPastMatches = []
+  let futureMatches = await DButils.execQuery(`SELECT HomeTeam_Id , AwayTeam_Id , MatchDate , Stadium_name form dbo.matches WHERE Played = 0`);
+  let pastMatches = await DButils.execQuery(`SELECT * form dbo.matches WHERE Played = 1`);
+  let resFutureMatches = [];
+  let resPastMatches = [];
   
   // need to get at least 3 events in past matches
   for(let i =0;i<pastMatches.length;i++){
     // get events for each game in db
-    let events = await DButils.execQuery(`SELECT * FROM dbo.Events WHERE Match_Id='${pastMatches[i].Match_Id}'`);
-    let resEvents = []
-    for(let j =0;j<events.length;j++){
-      jsonEvent = {
-        Date:events[j].event_date,
-        Hour:events[j].event_time,
-        TimeInMatch:events[j].minute,
-        EventDescription:events[j].game_event
-      };
-      resEvents.push(jsonEvent);
-
-    }
+    let events = await events_utils.getAllMatchEvents(pastMatches[i].Match_Id);
     let CurMatch = createMatchPrev(pastMatches[i])
     CurMatch["HomeGoals"] = pastMatches[i].HomeTeamGoals;
     CurMatch["HomeGoals"] = pastMatches[i].AwayTeamGoals;
-    CurMatch["EventCalender"] = resEvents;
+    CurMatch["EventCalender"] = events;
     resPastMatches.push(CurMatch);
   }
 
@@ -105,19 +94,6 @@ async function getNextGameDetails(){
     return matchPrev;
 }
 
-async function getTeamNameFromApi(teamId){
-
-    let teamName = await axios.get(
-        `https://soccer.sportmonks.com/api/v2.0/teams/${teamId}`,
-        {
-          params: {
-            api_token: process.env.api_token,
-          },
-        })
-
-    return teamName.data.data.name;   
-}
-
 async function geTimeFromDateTime(datetime){
     let data= new Date(datetime);
     let hrs = data.getHours();
@@ -138,13 +114,7 @@ async function getDateFromDateTime(datetime){
     return days + ':' + month + ':' + years;
 }
 
-async function getRefereeName(referee_id){
-  let referee = await DButils.execQuery(`SELECT TOP 1 1 FROM dbo.Referees where referee_id='${referee_id}'`);
-  let referee_array = [];
-  referee.map((element) => referee_array.push(element));
-  let full_name = referee_array[0].first_name + " " + referee_array[0].last_name;
-  return full_name;
-}
+
 
 async function checkiFMatchExist(match_id){
     // TODO - check if match exist in matches db.

@@ -2,7 +2,6 @@ const axios = require("axios");
 const api_domain = "https://soccer.sportmonks.com/api/v2.0";
 const LEAGUE_ID = 271;
 const DButils = require("./DButils");
-const favoriteMatches_utils = require("./favoriteMatches_utils");
 const events_utils = require("./events_utils");
 
 async function getTeamsByName(name) {
@@ -40,7 +39,7 @@ async function getPastMatches(team_id){
       HomeTeamGoals:match.HomeTeamGoals,
       AwayTeamGoals:match.AwayTeamGoals,
       EventCalender:match_events
-    }
+    };
     array_of_matches.push(jason_match);
   }
   return array_of_matches;
@@ -61,7 +60,7 @@ async function getNextMatches(team_id){
       AwayTeam_name:awayTeam_name,
       MatchDate:match.MatchDate,
       Stadium_name:match.Stadium_name,
-    }
+    };
     array_of_matches.push(jason_match);
   }
   return array_of_matches;
@@ -74,7 +73,7 @@ async function getAllMatches(team_id){
     next_matches_array = await getNextMatches(team_id);
     return {past_matches:past_matches_array,
             next_matches:next_matches_array
-    }
+    };
 }
 
 async function getTeamNameFromApi(teamId){
