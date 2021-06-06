@@ -6,6 +6,9 @@ const events_utils = require("./events_utils");
 const referee_utils = require("./referee_utils");
 const match_utils = require("./match_utils");
 
+/*
+  this function will get teams that have the search name
+*/
 async function getTeamsByName(name) {
     let teams_list = [];
     const teams = await axios.get(`${api_domain}/teams/search/${name}`, {
@@ -14,73 +17,46 @@ async function getTeamsByName(name) {
         include: "league",
       },
     });
+    // make the json
     teams.data.data.forEach(team => {
         if(team.league && team.league.data.id === LEAGUE_ID){
           teams_list.push({Team_Id:team.id ,Team_name: team.name, Team_img: team.logo_path})  
         }
     });
     return teams_list;
-  }
+}
 
+/*
+  this function will get all team past matches
+*/
 async function getPastMatches(team_id){
   let array_of_matches = [];
   const matches = await DButils.execQuery(`SELECT * FROM dbo.matches 
   WHERE Played = 1 AND (HomeTeam_Id = '${team_id}' OR AwayTeam_Id ='${team_id}')`);
   for(const match of matches){
-    // const homeTeam_name = await getTeamNameFromApi(match.HomeTeam_Id);
-    // const awayTeam_name = await getTeamNameFromApi(match.AwayTeam_Id);
-    // const referee_name = await referee_utils.getRefereeName(match.RefereeId);
-    // const match_events = await events_utils.getAllMatchEvents(match.Match_Id);
-    // let jason_match = {
-    //   Match_Id:match.Match_Id,
-    //   HomeTeam_Id:match.HomeTeam_Id,
-    //   HomeTeam_name:homeTeam_name,
-    //   AwayTeam_Id:match.AwayTeam_Id,
-    //   AwayTeam_name:awayTeam_name,
-    //   MatchDate:match.MatchDate,
-    //   Referee_id:match.RefereeId,
-    //   Referee_name:referee_name,
-    //   Stadium_name:match.Stadium_name,
-    //   HomeTeamGoals:match.HomeTeamGoals,
-    //   AwayTeamGoals:match.AwayTeamGoals,
-    //   EventCalender:match_events
-    // };
-    // const match_events = await events_utils.getAllMatchEvents(match.Match_Id);
-    // const jason_match = await match_utils.createMatchPrev(match);
-    // jason_match["HomeTeamGoals"] = match.HomeTeamGoals;
-    // jason_match["AwayTeamGoals"] = match.AwayTeamGoals;
-    // jason_match["EventCalender"] = match_events;
     let jason_match = await match_utils.createMatch(match);
     array_of_matches.push(jason_match);
   }
   return array_of_matches;
 }
 
+/*
+  this function will get all team future matches
+*/
 async function getNextMatches(team_id){
   let array_of_matches = [];
   const matches = await DButils.execQuery(`SELECT * FROM dbo.matches 
   WHERE Played = 0 AND (HomeTeam_Id = '${team_id}' OR AwayTeam_Id ='${team_id}')`);
   for(const match of matches){
-    // const homeTeam_name = await getTeamNameFromApi(match.HomeTeam_Id);
-    // const awayTeam_name = await getTeamNameFromApi(match.AwayTeam_Id);
-    // const referee_name = await referee_utils.getRefereeName(match.RefereeId);
-    // let jason_match = {
-    //   Match_Id:match.Match_Id,
-    //   HomeTeam_Id:match.HomeTeam_Id,
-    //   HomeTeam_name:homeTeam_name,
-    //   AwayTeam_Id:match.AwayTeam_Id,
-    //   AwayTeam_name:awayTeam_name,
-    //   MatchDate:match.MatchDate,
-    //   Referee_id:match.RefereeId,
-    //   Referee_name:referee_name,
-    //   Stadium_name:match.Stadium_name
-    // };
     let jason_match = await match_utils.createMatchPrev(match);
     array_of_matches.push(jason_match);
   }
   return array_of_matches;
 }
 
+/*
+  this function will get all team matches
+*/
 async function getAllMatches(team_id){
     let past_matches_array = [];
     let next_matches_array = [];
@@ -91,8 +67,10 @@ async function getAllMatches(team_id){
     };
 }
 
+/*
+  this function will get team name from outside api 
+*/
 async function getTeamNameFromApi(teamId){
-
   let teamName = await axios.get(
       `https://soccer.sportmonks.com/api/v2.0/teams/${teamId}`,
       {
@@ -104,6 +82,9 @@ async function getTeamNameFromApi(teamId){
   return teamName.data.data.name;   
 }
 
+/*
+  this function will get team name and image from outside api 
+*/
 async function getTeamNameAndImgFromApi(teamId){
 
   let team = await axios.get(

@@ -7,16 +7,18 @@ const referee_utils = require("./referee_utils");
 const axios = require("axios");
 
 
-
+/*
+  this function will create a match preview acording to the api
+*/
 async function createMatchPrev(Game){
-  // homeTeamName = await teams_utils.getTeamNameFromApi(Game.HomeTeam_Id);
-  // awayTeamName = await teams_utils.getTeamNameFromApi(Game.AwayTeam_Id);
+  // get the json of team
   const homeTeam = await teams_utils.getTeamNameAndImgFromApi(Game.HomeTeam_Id);
   const awayTeam = await teams_utils.getTeamNameAndImgFromApi(Game.AwayTeam_Id);
   let homeTeamName = homeTeam.name;
   let awayTeamName = awayTeam.name;
   let homeTeamImg = homeTeam.img_url;
   let awayTeamImg = awayTeam.img_url;
+  // create the perview of the teams
   let homeTeamPrev = {Team_Id:Game.HomeTeam_Id,
     Team_name:homeTeamName,
     Team_img:homeTeamImg
@@ -27,8 +29,10 @@ async function createMatchPrev(Game){
   };
 
   stadium = Game.Stadium_name;
+  // get format of time and date from dateTime
   gamehour = await geTimeFromDateTime(Game.MatchDate);
   gamedate = await getDateFromDateTime(Game.MatchDate);
+  // get the referee preview
   referee = await referee_utils.getRefereeName(Game.RefereeID);
   return{
     Match_Id:Game.Match_Id,
@@ -40,6 +44,10 @@ async function createMatchPrev(Game){
     Referee:referee
   };
 }
+
+/*
+  this function will create a match json acording to the api
+*/
 async function createMatch(match){
   const events = await events_utils.getAllMatchEvents(match.Match_Id);
   let CurMatch = await createMatchPrev(match);
@@ -52,7 +60,9 @@ async function createMatch(match){
   return return_match;
 }
 
-// get all stage matches 
+/*
+  this function will get all the matches in db
+*/
 async function getCurrentStageMatches(){
   await updatePlayedMatchesInDB();
   let futureMatches = await DButils.execQuery(`SELECT * FROM dbo.matches WHERE Played = 0`);
@@ -60,19 +70,13 @@ async function getCurrentStageMatches(){
   let resFutureMatches = [];
   let resPastMatches = [];
   
-  // need to get at least 3 events in past matches
+  // create match json for all the past games according to the api
   for(let i =0;i<pastMatches.length;i++){
-    // get events for each game in db
-    // let events = await events_utils.getAllMatchEvents(pastMatches[i].Match_Id);
-    // let CurMatch = createMatchPrev(pastMatches[i])
-    // CurMatch["HomeGoals"] = pastMatches[i].HomeTeamGoals;
-    // CurMatch["HomeGoals"] = pastMatches[i].AwayTeamGoals;
-    // CurMatch["EventCalender"] = events;
     const CurMatch = await createMatch(pastMatches[i]);
     resPastMatches.push(CurMatch);
   }
 
-  // future matches should represent as MatchPrev
+  // create matchPrev json for all thefuture games according to the api
   let i =0;
   for(i;i<futureMatches.length;i++){
     resFutureMatches.push(await createMatchPrev(futureMatches[i]));
@@ -83,26 +87,41 @@ async function getCurrentStageMatches(){
   }
 }
 
+/*
+  this function will change the row played to 1 of a match in the db
+*/
 async function changePlayedTo1(match_id){
     await DButils.execQuery(`UPDATE dbo.matches SET Played=1
     WHERE Match_Id='${match_id}'`);
 }
 
+/*
+  this function will make that all matches in db that
+  there date was past will got remove from favorite table 
+  and change thier status to played
+*/
 async function updatePlayedMatchesInDB(){
+    // get the right date
     let tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
     let curr_date = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1)+"Z";
+    // get all the unplayed matches
     let games = await DButils.execQuery(`SELECT * FROM dbo.matches WHERE Played = 0`);
     
     let matches_array = [];
     games.map((element) => matches_array.push(element)); //extracting the match id into array for checking if exist
     for(const match of matches_array){
+      // if the match date was past
       if(match.MatchDate.getTime() < new Date(curr_date).getTime()){
+        // remove and change the match
         await changePlayedTo1(match.Match_Id);
         await favoriteMatches_utils.removeMatchFromFavorite(match.Match_Id);
       }
     }
 }
 
+/*
+  this function will get the nearest game and show is details
+*/
 async function getNextGameDetails(){
   // update the db of matches that already played
     await updatePlayedMatchesInDB();
@@ -122,6 +141,9 @@ async function getNextGameDetails(){
     return matchPrev;
 }
 
+/*
+  this function will get the time from DateTime value
+*/
 async function geTimeFromDateTime(datetime){
     let data= new Date(datetime);
     let hrs = data.getHours();
@@ -134,6 +156,9 @@ async function geTimeFromDateTime(datetime){
     return postTime;
 }
 
+/*
+  this function will get the date from DateTime value
+*/
 async function getDateFromDateTime(datetime){
     let data = new Date(datetime);
     let years = data.getFullYear();
@@ -143,20 +168,22 @@ async function getDateFromDateTime(datetime){
 }
 
 
-
+/*
+  this function will check if match exist in db.
+*/
 async function checkiFMatchExist(match_id){
-    // TODO - check if match exist in matches db.
   let checkIfExist = await DButils.execQuery(`SELECT TOP 1 1 FROM dbo.matches where Match_Id='${match_id}'`);
   let match_id_array = [];
     checkIfExist.map((element) => match_id_array.push(element)); //extracting the match id into array for checking if exist
   if(match_id_array.length==0){
       return false;
-    
   }
   return true;
-
 }
 
+/*
+  this function will get all given matches info
+*/
 async function getMatchesInfo(matches_ids_list) {
     matchesPrev = []
     for(let i =0;i<matches_ids_list.length;i++){
@@ -167,7 +194,9 @@ async function getMatchesInfo(matches_ids_list) {
     return matchesPrev;
   }
 
-
+/*
+  this function will add a match to db
+*/
 async function addMatchToDB(match_deatails) {
     let home_team = match_deatails.home_team_id;
     let away_team = match_deatails.away_team_id;
@@ -182,6 +211,9 @@ async function addMatchToDB(match_deatails) {
     console.log(match_deatails);
 }
 
+/*
+  this function will add to a match the goals that scored
+*/
 async function updateMatchInDB(match_deatails) {
     let match_id = match_deatails.match_id;
     let home_team_goals = match_deatails.home_team_goals;
@@ -194,13 +226,19 @@ async function updateMatchInDB(match_deatails) {
 }
 
 
-// need to check
+/*
+  this function will add to a match a eventCalender
+*/
 async function updateEventCalenderToMatch(match_id,eventCalender) {
   for(const event of eventCalender){
     await events_utils.addEventToMatch(match_id,event);
   }
 }
 
+/*
+  this function will check if the date of the match
+  is in future
+*/
 async function dateOfTheMatchIsGood(match_date) {
   let tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
   let curr_date = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1)+"Z";
@@ -212,6 +250,10 @@ async function dateOfTheMatchIsGood(match_date) {
   return true;
 }
 
+/*
+  this function will check if the date of the match
+  is already gone
+*/
 async function matchPastTheDate(match_id){
   let match = await DButils.execQuery(`SELECT * FROM dbo.matches where Match_Id='${match_id}'`);
   let match_in_array = [];
