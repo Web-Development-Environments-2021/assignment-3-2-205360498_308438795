@@ -6,6 +6,7 @@ const LEAGUE_ID = 271;
 
 async function getStageMatches(){
   let matches = await match_utils.getCurrentStageMatches();
+  return matches;
 }
 
 
