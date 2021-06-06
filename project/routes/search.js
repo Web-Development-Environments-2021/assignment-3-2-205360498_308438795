@@ -4,6 +4,10 @@ const search_utils = require("./utils/search_utils");
 const teams_utils = require("./utils/teams_utils");
 const players_utils = require("./utils/players_utils");
 
+
+/**
+ * this path used for search team by name in external API ( Superliga teams only!)
+ */
 router.get("/team/:name", async (req, res, next) => {
   try {
     const results = await teams_utils.getTeamsByName(req.params.name);
@@ -16,6 +20,10 @@ router.get("/team/:name", async (req, res, next) => {
     next(error);
   }
 });
+
+/**
+ * this path used for search players by name in external API ( Superliga teams only!)
+ */
 router.get("/player/:name", async (req, res, next) => {
     try {
       const results = await players_utils.getplayersByName(req.params.name);

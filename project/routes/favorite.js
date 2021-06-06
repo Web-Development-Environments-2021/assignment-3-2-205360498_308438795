@@ -36,7 +36,9 @@ const favoriteMatches_utils = require("./utils/favoriteMatches_utils");
       next(error);
     }
   });
-  
+    /**
+   * This path returns the favorites matches that were saved by the logged-in user
+   */
   router.get("/matches", async (req, res, next) => {
     try {
       const user_id = req.session.user_id;
@@ -56,7 +58,9 @@ const favoriteMatches_utils = require("./utils/favoriteMatches_utils");
   });
   
   
-  
+  /**
+ * This path gets body with MatchId and save this match in the favorites list of the logged-in user
+ */
   router.post("/matches", async (req, res, next) => {
     try {
       const user_id = req.session.user_id;
@@ -64,6 +68,7 @@ const favoriteMatches_utils = require("./utils/favoriteMatches_utils");
       let matchExist = await match_utils.checkiFMatchExist(match_id); 
       if(!matchExist){
         res.status(400).send("worng input parameters");
+        // match not in DB
         return;
       }
       let match_was_played = await match_utils.matchPastTheDate(match_id);

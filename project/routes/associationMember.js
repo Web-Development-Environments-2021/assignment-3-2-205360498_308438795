@@ -102,7 +102,9 @@ const favoriteMatches_utils = require("./utils/favoriteMatches_utils");
     }
   });
 
-
+  /**
+ * This path gets array with match events and save this calender to match in  DB
+ */
   router.post("/addEventCalender", async (req, res, next) => {
     try {
       const match_id = req.body.match_id;
