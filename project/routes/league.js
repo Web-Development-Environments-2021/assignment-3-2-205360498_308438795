@@ -5,7 +5,7 @@ const league_utils = require("./utils/league_utils");
 router.get("/getDetails", async (req, res, next) => {
   try {
     const league_details = await league_utils.getLeagueDetails();
-    res.send(league_details);
+    res.status(200).send(league_details);
   } catch (error) {
     next(error);
   }
@@ -16,7 +16,7 @@ router.get("/getDetails", async (req, res, next) => {
 router.get("/getSatgeMatches", async (req, res, next) => {
   try {
     const league_matches = await league_utils.getStageMatches();
-    res.send(league_details);
+    res.status(200).send(league_details);
   } catch (error) {
     next(error);
   }

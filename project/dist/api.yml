@@ -9,7 +9,9 @@ tags:
   - name: League
   - name: Players
   - name: Teams
-  - name: Games
+  - name: Matches
+  - name: Search
+  - name: AssociationMember
 paths:
 
 
@@ -29,7 +31,9 @@ paths:
         "201":
           description: A new user has been added
         "400":
-          description: wrong input parameters
+          description: Missing Parameters
+        "409":
+          description: Username taken   
 
 
   /Login:
@@ -84,14 +88,117 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/League"
+
+
+                  
+
+  /users/getAllMatches:
+    get:
+      tags:
+        - User
+        - Matches
+      summary: all matches in DB
+      description: sent to client all matches in DB
+      responses:
+        "200":
+          description: the matches send successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MatchDetails"
+                  
+                  
+  /users/associationMember/addMatch:
+    post:
+      tags:
+        - User
+        - AssociationMember
+        - Matches
+      summary: AssociationMember add match to DB
+      description:   AssociationMember add match to DB , future match
+      responses:
+        "201":
+          description: new match has been added
+        '400':
+          description: The date that given is already gone
+        '400':
+          description: The id of one of the Teams is not from our league! 
         "400":
-          description: wrong input parameters
+          description: The id of the referee is not exist
+        "403":
+          description: only association Member can use this function
 
-        "404":
-          description:server didn't find the league details  
+  /users/associationMember/updateMatch:
+    put:
+      tags:
+        - User
+        - AssociationMember
+        - Matches
+      summary: AssociationMember add match to DB
+      description:   AssociationMember add match to DB , future match
+      required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMatchScheme"      
+      responses:
+        "200":
+          description: The match update successfully
+        '400':
+          description: The date of the match was not past and the match was not played
+        '400':
+          description: The home_team_goals is not valid
+        "400":
+          description: The away_team_goals is not valid
+        "403":
+          description: only association Member can use this function          
+    
+    
+  /users/associationMember/addReferee:
+    post:
+      tags:
+        - User
+        - AssociationMember
+        - Matches
+      summary: AssociationMember add referee to DB
+      description:   AssociationMember add referee to DB       
+      responses:
+        "200":
+          description: Referee Already in DB
+        "201":
+          description : The Referee successfully saved
+        "403":
+          description: only association Member can use this function
 
 
-  /users/favoriteMatches:
+  /users/associationMember/addEventCalender:
+    post:
+      tags:
+        - User
+        - AssociationMember
+        - Matches 
+      summary: AssociationMember add eventCalender to match
+      description:   AssociationMember add array of events to match in DB  
+      required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventCalender"
+      responses:
+        "201":
+          description: the event calender was added successfully
+        "400":
+          description: The match_id not found in db
+        "400":
+          description: The date of the match still not played  
+        "403":
+          description: only association Member can use this function                 
+
+
+
+  /users/favorite/matches:
     get:
       tags:
         - User
@@ -138,103 +245,11 @@ paths:
           description: match already in your favorite list  
         '400':
           description: worng input parameters
-        '401':
-          description: the user must be login to the system
-
-
-
-  /users/favoritePlayers:
-    get:
-      tags:
-        - Users
-        - Players
-      summary: Return the favorite players that were saved by user
-      parameters:
-      responses:
-        "200":
-          description: data about the user's favorites players returned
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/PlayerPreview"
-        "401":
-          description: user is not authorized
-
-
-    post:
-      summary: save player in the favorites list of a user
-      tags:
-        - Users
-        - Players
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                playerId:
-                  type: int
-                  description: player's id which the user saved
-                  example: 85
-      responses:
-        "201":
-          description: The player successfully saved as favorite
-        "401":
-          description: user is not authorized
-
-
-  /users/favoritesTeams:
-    get:
-      tags:
-        - User
-        - Team
-      summary: user favorite Teams
-      description: sent to the client the current favorite Teams array
-      responses:
-        '200':
-          description: the Teams's array send successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Team"
-        '201':
-          description: there is no favorite Teams
-        '401':
-          description: the user must be login to the system
-        '404':
-          description: server didn't find userName
-
-        
-    post:
-      tags:
-        - User
-        - Team
-      summary: adding a Team to favorite list
-      description: adding a new Team to the user favorite Team list
-      requestBody:
-        required: true
-        content:
-          application/json: 
-            schema:
-              type: object
-              properties:
-                team_id:
-                  type: int
-                  description: team's id which the user saved
-                  example: 85
-      responses: 
-        '201':
-          description: New Team was been added to the favorite Team list
         '400':
-          description: worng input parameters
+          description: the match is already played and cant be added to favorite         
         '401':
           description: the user must be login to the system
-        '404':
-          description: server didn't find userName
+
 
 
   /teams/teamFullDetails/{teamId}:
@@ -288,8 +303,7 @@ paths:
                   $ref: "#/components/schemas/Team"
         '204':
           description: the search didn't find results
-        '400':
-          description: invalid syntax
+
 
 
   /search/player/{NameToSearch}:
@@ -318,13 +332,12 @@ paths:
                   $ref: "#/components/schemas/PlayerPreview"
         '204':
           description: the search didn't find results
-        '400':
-          description: invalid syntax
 
 
+  /league/getStageMatches:
 
 
-  /league/{Season}/{StageNum}:
+  /league/getStageMatches:
     get:
       tags:
         - Matches
@@ -348,15 +361,12 @@ paths:
             example: 38
       responses:
         '200':
-          description: the search find Coach
+          description: data about StageMatches
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/StageMatchesArray'
-        '204':
-          description: the search didn't find results
-        '400':
-          description: invalid syntax
+
 
 components:
   schemas:
@@ -402,6 +412,20 @@ components:
           description: URL for the user's image
           example: https://cloudinary.com/
       description: Model containing user info
+    
+    UpdateMatchScheme:
+      type: object
+      properties:
+        home_team_goals:
+          type: int
+          description: goals that home team scored
+          example: 0
+        away_team_goals:
+          type: int
+          description: goals that awat team scored
+          example: 2  
+
+
 
     LoginScheme:
       type: object

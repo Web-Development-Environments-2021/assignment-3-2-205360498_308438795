@@ -7,7 +7,11 @@ const players_utils = require("./utils/players_utils");
 router.get("/team/:name", async (req, res, next) => {
   try {
     const results = await teams_utils.getTeamsByName(req.params.name);
-    res.send(results);
+    if(results.length==0){
+      res.status(204).send("the search didn't find results")
+    }
+    else{
+    res.status(200).send(results);}
   } catch (error) {
     next(error);
   }
@@ -15,7 +19,11 @@ router.get("/team/:name", async (req, res, next) => {
 router.get("/player/:name", async (req, res, next) => {
     try {
       const results = await players_utils.getplayersByName(req.params.name);
-      res.send(results);
+      if(results.length==0){
+        res.status(204).send("the search didn't find results")
+      }
+      else{res.send(results);}
+      
     } catch (error) {
       next(error);
     }
