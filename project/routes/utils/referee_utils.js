@@ -31,7 +31,15 @@ async function addRefereeToDB(first_name,last_name){
     return true;
   }
 
+  async function getRefereeName(referee_id){
+    let referee = await DButils.execQuery(`SELECT TOP 1 1 FROM dbo.Referees where referee_id='${referee_id}'`);
+    let referee_array = [];
+    referee.map((element) => referee_array.push(element));
+    let full_name = referee_array[0].first_name + " " + referee_array[0].last_name;
+    return full_name;
+  }
 
+exports.getRefereeName = getRefereeName;
 exports.addRefereeToDB = addRefereeToDB;
 exports.checkIfRefereeExistWithSameName = checkIfRefereeExistWithSameName;
 exports.checkIfRefereeExist = checkIfRefereeExist;

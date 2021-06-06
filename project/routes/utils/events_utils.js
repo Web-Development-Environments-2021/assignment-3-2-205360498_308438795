@@ -17,8 +17,7 @@ async function getAllMatchEvents(match_id){
     const eventCalender = [];
     const events = await DButils.execQuery(`SELECT * FROM dbo.Events where MatchId='${match_id}'`);
     for(const event of events){
-        let event_json ={
-            Event_Id:event.Event_Id,
+        let event_json = {
             event_date:event.event_date,
             event_time:event.event_time,
             minute:event.minute,

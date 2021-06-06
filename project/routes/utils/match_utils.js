@@ -16,13 +16,17 @@ async function createMatchPrev(Game){
   gamedate = await getDateFromDateTime(Game.MatchDate);
   referee_name = await referee_utils.getRefereeName(Game.RefereeID);
   return{
+    Match_Id:Game.Match_Id,
     Date:gamedate,
     Hour:gamehour,
-    HomeTeam:homeTeamName,
-    AwayTeam:awayTeamName,
+    HomeTeam_Id:Game.HomeTeam_Id,
+    HomeTeam_name:homeTeamName,
+    AwayTeam_Id:Game.AwayTeam_Id,
+    AwayTeam_name:awayTeamName,
     Stadium:stadium,
+    RefereeID:Game.RefereeID,
     Referee:referee_name
-  }
+  };
 }
 
 // get all stage matches 
@@ -173,17 +177,6 @@ async function updateEventCalenderToMatch(match_id,eventCalender) {
   }
 }
 
-
-async function getAllMatches() {
-    await updatePlayedMatchesInDB();
-    const matches = await DButils.execQuery(
-        `SELECT * FROM dbo.matches`
-      );
-    console.log(matches);
-    return matches;
-}
-
-
 async function dateOfTheMatchIsGood(match_date) {
   let tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
   let curr_date = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1)+"Z";
@@ -208,7 +201,6 @@ async function matchPastTheDate(match_id){
 exports.addMatchToDB = addMatchToDB;
 exports.updateMatchInDB = updateMatchInDB;
 exports.updateEventCalenderToMatch = updateEventCalenderToMatch;
-exports.getAllMatches = getAllMatches;
 exports.getMatchesInfo = getMatchesInfo;
 exports.getNextGameDetails = getNextGameDetails;
 exports.checkiFMatchExist = checkiFMatchExist;
