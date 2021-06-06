@@ -60,8 +60,7 @@ async function getplayersByName(name) {
       include: "team,position",
     },
   });
-
-  players.data.data.forEach(async(player) => {
+  for(const player of players.data.data){
     let team_id;
     let team_name;
     let position_id;
@@ -93,7 +92,7 @@ async function getplayersByName(name) {
     
     players_list.push({"firstname": player.firstname, "lastname": player.lastname,"image_path": player.image_path ,
     "team_name": team_name, "position_num": position_id,"position_name": position_name})  
-  });
+  }
   return players_list;
 }
 

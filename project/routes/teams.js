@@ -2,15 +2,27 @@ var express = require("express");
 var router = express.Router();
 const DButils = require("./utils/DButils");
 const players_utils = require("./utils/players_utils");
+const teams_utils = require("./utils/teams_utils");
 
 router.get("/teamFullDetails/:teamId", async (req, res, next) => {
   let team_details = [];
+  let team_id = req.params.teamId;
   try {
-    const team_details = await players_utils.getPlayersByTeam(
-      req.params.teamId
-    );
-    //we should keep implementing team page.....
-    res.send(team_details);
+    // check if teams belong to the league
+    const TeamFromCurrLeague = await league_utils.teamIsInLeague(team_id);
+    if(!TeamFromCurrLeague){
+    res.status(400).send("The id of the Team is not from our league!");
+      return;
+    }
+    const team_name = await teams_utils.getTeamNameFromApi(team_id);
+    const team_players = await players_utils.getPlayersByTeam(team_id);
+    const team_matches = await teams_utils.getAllMatches(team_id);
+    const return_json = {
+      Team_name:team_name,
+      Team_players:team_players,
+      Team_matches:team_matches
+    };
+    res.send(return_json);
   } catch (error) {
     next(error);
   }
