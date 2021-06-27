@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const DButils = require("../routes/utils/DButils");
+const associationMember_utils = require("../routes/utils/associationMember_utils");
 const bcrypt = require("bcryptjs");
 
 router.post("/Register", async (req, res, next) => {
@@ -60,12 +61,15 @@ router.post("/Login", async (req, res, next) => {
     if (!user || !bcrypt.compareSync(req.body.password, user.password)) {
       throw { status: 401, message: "Username or Password incorrect" };
     }
-
+    let userIsAssociationMember = await associationMember_utils.userIsAssociationMember_utils(user.user_id);
+    const jsonAnsAssociationMember ={
+      isAssociationMember: userIsAssociationMember
+    };
     // Set cookie
     req.session.user_id = user.user_id;
 
     // return cookie
-    res.status(200).send("login succeeded");
+    res.status(200).send(jsonAnsAssociationMember);
   } catch (error) {
     next(error);
   }

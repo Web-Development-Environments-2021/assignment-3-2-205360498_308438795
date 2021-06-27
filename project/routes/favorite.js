@@ -49,6 +49,7 @@ const favoriteMatches_utils = require("./utils/favoriteMatches_utils");
       // check if user doesnt have favorite matches
       if(matches_ids_array.length==0){
         res.status(204).send("there is no favorite matches")
+        return;
       }
       const results = await match_utils.getMatchesInfo(matches_ids_array);
       res.status(200).send(results);
@@ -83,6 +84,22 @@ const favoriteMatches_utils = require("./utils/favoriteMatches_utils");
       }
       await users_utils.markMatchAsFavorite(user_id, match_id);
       res.status(201).send("The match successfully saved as favorite");
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // added need to tell
+  router.get("/matcheInFav/:match_id", async (req, res, next) => {
+    try {
+      const user_id = req.session.user_id;
+      const match_id = req.params.match_id;
+      let matchAlreadyInFavorites = await favoriteMatches_utils.checkIfMatchInFavo(user_id,match_id);
+      if(matchAlreadyInFavorites){
+        res.status(200).send({ans:true});
+        return;
+      }
+      res.status(200).send({ans:false});
     } catch (error) {
       next(error);
     }

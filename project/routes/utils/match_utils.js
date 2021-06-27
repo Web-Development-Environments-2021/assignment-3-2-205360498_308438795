@@ -162,9 +162,9 @@ async function geTimeFromDateTime(datetime){
 async function getDateFromDateTime(datetime){
     let data = new Date(datetime);
     let years = data.getFullYear();
-    let month = data.getMonth();
+    let month = data.getMonth()+1;
     let days = data.getDate();
-    return days + ':' + month + ':' + years;
+    return days + '/' + month + '/' + years;
 }
 
 
@@ -187,7 +187,7 @@ async function checkiFMatchExist(match_id){
 async function getMatchesInfo(matches_ids_list) {
     matchesPrev = []
     for(let i =0;i<matches_ids_list.length;i++){
-        let match = await DButils.execQuery(`SELECT HomeTeam_Id,AwayTeam_Id,MatchDate,Stadium_name,RefereeID FROM dbo.matches where Match_Id='${matches_ids_list[i]}'`);
+        let match = await DButils.execQuery(`SELECT * FROM dbo.matches where Match_Id='${matches_ids_list[i]}'`);
         let matchDet = await createMatchPrev(match[0]);
          matchesPrev.push(matchDet);
     }
@@ -275,3 +275,5 @@ exports.dateOfTheMatchIsGood = dateOfTheMatchIsGood;
 exports.matchPastTheDate = matchPastTheDate;
 exports.createMatchPrev = createMatchPrev;
 exports.createMatch = createMatch;
+exports.getDateFromDateTime = getDateFromDateTime;
+exports.geTimeFromDateTime = geTimeFromDateTime ; 
