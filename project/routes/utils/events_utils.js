@@ -1,5 +1,6 @@
 const DButils = require("./DButils");
 const axios = require("axios");
+const match_utils = require("./match_utils");
 
 
 /*
@@ -24,9 +25,11 @@ async function getAllMatchEvents(match_id){
     const events = await DButils.execQuery(`SELECT * FROM dbo.Events where MatchId='${match_id}'`);
     for(const event of events){
         // turn all event to json
+        let time = await match_utils.geTimeFromDateTime(event.event_time);
+        let date = await match_utils.getDateFromDateTime(event.event_date);
         let event_json = {
-            event_date:event.event_date,
-            event_time:event.event_time,
+            event_date:date,
+            event_time:time,
             minute:event.minute,
             game_event:event.game_event 
         };

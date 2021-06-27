@@ -5,21 +5,34 @@ const match_utils = require("./utils/match_utils")
 const league_utils = require("./utils/league_utils");
 const referee_utils = require("./utils/referee_utils");
 const favoriteMatches_utils = require("./utils/favoriteMatches_utils");
+const associationMember_utils = require("./utils/associationMember_utils");
 
 /**
  * Authenticate for associationMember requests by middleware
  */
  router.use(async function (req, res, next) {
+    // try{
+    //   DButils.execQuery(`SELECT permission_char FROM dbo.Permissions WHERE user_id = '${req.session.user_id}'`)
+    //   .then((permissons) => {
+    //     if (permissons.find((x) => x.permission_char === 'A')) {
+    //       next();
+    //     }else{
+    //       res.status(403).send("only association Member can use this function")
+    //       return;
+    //     }
+    //   })
+    // } catch (error) {
+    //   next(error);  
+    // }
     try{
-      DButils.execQuery(`SELECT permission_char FROM dbo.Permissions WHERE user_id = '${req.session.user_id}'`)
-      .then((permissons) => {
-        if (permissons.find((x) => x.permission_char === 'A')) {
-          next();
-        }else{
-          res.status(403).send("only association Member can use this function")
-          return;
-        }
-      })
+      isAssociationMember = await associationMember_utils.userIsAssociationMember_utils(req.session.user_id);
+      if(isAssociationMember){
+        next();
+      }
+      else{
+        res.status(403).send("only association Member can use this function")
+        return;
+      }
     } catch (error) {
       next(error);  
     }
