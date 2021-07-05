@@ -29,6 +29,7 @@ async function createMatchPrev(Game){
   };
 
   stadium = Game.Stadium_name;
+  Game.MatchDate.setHours(Game.MatchDate.getHours() - 3);
   // get format of time and date from dateTime
   gamehour = await geTimeFromDateTime(Game.MatchDate);
   gamedate = await getDateFromDateTime(Game.MatchDate);
@@ -145,7 +146,7 @@ async function getNextGameDetails(){
   this function will get the time from DateTime value
 */
 async function geTimeFromDateTime(datetime){
-    let data= new Date(datetime);
+    let data= new Date(datetime)
     let hrs = data.getHours();
     let mins = data.getMinutes();
     if(hrs<=9)

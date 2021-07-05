@@ -14,8 +14,8 @@ async function getTeamsByName(name) {
     let teams_list = [];
     const teams = await axios.get(`${api_domain}/teams/search/${name}`, {
       params: {
-        api_token: process.env.api_token,
         include: "league",
+        api_token: process.env.api_token,
       },
     });
     // make the json
