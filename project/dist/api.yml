@@ -663,10 +663,14 @@ components:
           description: player's image
           format: URL
           example: https://cdn.sportmonks.com/images/soccer/players/11/84587.png
-        position:
+        PositionNumber:
           type: integer
           description: player's position in team
           example: 1
+        PositionName:
+          type: string
+          description: player's position name
+          example: Attacker
         team_name:
           type: string
           description: player's team name

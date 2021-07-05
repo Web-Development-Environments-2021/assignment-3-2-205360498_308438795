@@ -101,8 +101,8 @@ async function getplayersByName(name) {
       position_name = player.position.data.name;
     }
     // make the json
-    players_list.push({"firstname": player.firstname, "lastname": player.lastname,"image_path": player.image_path ,
-    "team_name": team_name, "position_num": position_id,"position_name": position_name})  
+    players_list.push({"name": player.firstname +" "+player.lastname ,"image_url": player.image_path ,
+    "team_name": team_name, "PositionNumber": position_id,"PositionName": position_name})  
   }
   return players_list;
 }
